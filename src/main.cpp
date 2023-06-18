@@ -11,14 +11,17 @@ class MainWindow : public Window
 	{
 		backgroundColor = D2D1::ColorF(0.2, 0.25, 0.3);
 
-		rect = new Rect(this, 100, 100, 100, 30);
+		rect = new Rect(this, 100, 100, 350, 350);
 		rect->setColor(D2D1::ColorF(1.0, 0.5, 0.0));
 		push(rect);
 
-		MouseArea* mouseArea = new MouseArea(rect, 0, 0, 100, 30);
-		mouseArea->registerSignal("mouse_enter", [this](){ setCursor(IDC_HAND); });
-		mouseArea->registerSignal("mouse_leave", [this](){ setCursor(IDC_ARROW); });
-		push(mouseArea);
+		Rect* rect1 = new Rect(rect, 0, 0, 100, 100);
+		rect1->is_debug = true;
+		rect1->setAnchor(AnchorType::left, AnchorType::left);
+		rect1->setAnchor(AnchorType::right, AnchorType::right);
+		rect1->setAnchor(AnchorType::bottom, AnchorType::bottom);
+		push(rect1);
+
 	}
 
 	void CalculateLayout(float width, float height)

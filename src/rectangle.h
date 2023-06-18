@@ -9,6 +9,7 @@ protected:
 
 public:
 	Rect(Control* parent, float x, float y, float width, float height);
+	void resize(float width, float height) override;
 	void setColor(D2D1_COLOR_F color);
 	void update() override;
 };

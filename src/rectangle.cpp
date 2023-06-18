@@ -13,6 +13,13 @@ Rect::Rect(Control* parent, float x, float y, float width, float height)
 	resource.renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &brush);
 }
 
+void Rect::resize(float width, float height)
+{
+	Control::resize(width, height);
+	rect.right = width;
+	rect.bottom = height;
+}
+
 void Rect::setColor(D2D1_COLOR_F color)
 {
 	brush->SetColor(color);
