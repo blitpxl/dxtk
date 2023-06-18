@@ -1,0 +1,7 @@
+env = Environment(CPPPATH = ["."])
+env.Append(CXXFLAGS=["/std:c++20", "/Od", "/Zi", "/DEBUG", "/EHsc"])
+#env.Append(CXXFLAGS=["/std:c++20", "/Ox", "/EHsc"])
+env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS'])
+
+env.Append(LIBS=["user32", "dwmapi", "d2d1", "dwrite"])
+env.Program("main", Glob("*.cpp") + Glob("controls/*.cpp"))
