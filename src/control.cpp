@@ -51,7 +51,6 @@ void Control::update()
 {
 	if (is_child)
 	{
-		printd(localX);
 		this->x = parent->x + localX;
 		this->y = parent->y + localY;
 	}

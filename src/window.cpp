@@ -94,63 +94,37 @@ bool intersecting(int x, int y, AABB aabb)
 */
 
 void Window::OnMouseMove(int x, int y)
-{/*
-	for (AbstractControl* control : scene)
+{
+	for (MouseArea* mouseArea : mouseAreas)
 	{
-		if (control->mouseTracking)
+		if (mouseArea->mouseTracking)
 		{
-			if (intersecting(x, y, control->getAABB()))
+			if (mouseArea->intersect(x, y))
 			{
-				if (!control->mouseEntered)
+				if (!mouseArea->mouseEntered)
 				{
-					control->mouseEnter();
-					InvalidateRect(GetHandle(), NULL, FALSE);
+					mouseArea->sendMouseEnter();
 				}
 			}
 			else
 			{
-				if (control->mouseEntered)
+				if (mouseArea->mouseEntered)
 				{
-					control->mouseLeave();
-					InvalidateRect(GetHandle(), NULL, FALSE);
+					mouseArea->sendMouseLeave();
 				}
 			}
 		}
-	}*/
+	}
 }
 
 void Window::OnPrimaryMouseButtonDown(int x, int y)
 {
-	/*
-	for (AbstractControl* control : scene)
-	{
-		if (control->mouseTracking)
-		{
-			if (intersecting(x, y, control->getAABB()))
-			{
-				control->mouseButtonDown();
-				InvalidateRect(GetHandle(), NULL, FALSE);
-				break;
-			}
-		}
-	}*/
+	
 }
 
 void Window::OnPrimaryMouseButtonUp(int x, int y)
 {
-	/*
-	for (AbstractControl* control : scene)
-	{
-		if (control->mouseTracking)
-		{
-			if (intersecting(x, y, control->getAABB()))
-			{
-				control->mouseButtonUp();
-				InvalidateRect(GetHandle(), NULL, FALSE);
-				break;
-			}
-		}
-	}*/
+
 }
 
 void Window::OnSecondaryMouseButtonDown(int x, int y) { }  // overridable
@@ -172,6 +146,26 @@ void Window::OnResize()
 	}
 }
 
+void Window::push(Control* control)
+{
+	scene.push_back(control);
+}
+
+void Window::push(MouseArea* mouseArea)
+{
+	mouseAreas.push_back(mouseArea);
+	scene.push_back(mouseArea);
+}
+
+void Window::redraw()
+{
+	InvalidateRect(GetHandle(), NULL, FALSE);
+}
+
+void Window::setCursor(LPWSTR cursorName)
+{
+	cursorShape = LoadCursor(NULL, cursorName);
+}
 
 LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -227,6 +221,13 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_RBUTTONUP:
 		OnSecondaryMouseButtonUp(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
 		return 0;
+
+	case WM_SETCURSOR:
+        if (LOWORD(lparam) == HTCLIENT)
+        {
+            SetCursor(cursorShape);
+            return TRUE;
+        }
 
 	default:
 		return DefWindowProc(GetHandle(), msg, wparam, lparam);

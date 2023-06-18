@@ -1,6 +1,7 @@
 #include <window.h>
 #include <shitlog.h>
 #include <rectangle.h>
+#include <mousearea.h>
 
 class MainWindow : public Window
 {
@@ -8,12 +9,16 @@ class MainWindow : public Window
 
 	void Init()
 	{
-		rect = new Rect(this, 100, 100, 350, 350);
-		rect->setColor(D2D1::ColorF(1.0, 0.5, 0.0));
-		scene.push_back(rect);
+		backgroundColor = D2D1::ColorF(0.2, 0.25, 0.3);
 
-		Rect* rect1 = new Rect(rect, 10, 10, 100, 100);
-		scene.push_back(rect1);
+		rect = new Rect(this, 100, 100, 100, 30);
+		rect->setColor(D2D1::ColorF(1.0, 0.5, 0.0));
+		push(rect);
+
+		MouseArea* mouseArea = new MouseArea(rect, 0, 0, 100, 30);
+		mouseArea->registerSignal("mouse_enter", [this](){ setCursor(IDC_HAND); });
+		mouseArea->registerSignal("mouse_leave", [this](){ setCursor(IDC_ARROW); });
+		push(mouseArea);
 	}
 
 	void CalculateLayout(float width, float height)
