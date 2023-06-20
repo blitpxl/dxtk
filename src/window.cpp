@@ -2,10 +2,23 @@
 #include "shitlog.h"
 
 Window::Window()
-: factory(NULL), renderTarget(NULL)
+: factory(NULL), renderTarget(NULL), Control()
 {
 	is_window = true; 
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
+	resource.window = this;
+}
+
+void Window::CalculateLayout(float width, float height)
+{
+	this->width = width;
+	this->height = height;
+	anchors[AnchorType::left] = 0;
+	anchors[AnchorType::top] = 0;
+	anchors[AnchorType::right] = width;
+	anchors[AnchorType::bottom] = height;
+	anchors[AnchorType::horizontalCenter] = anchors[AnchorType::right] - (width / 2);
+	anchors[AnchorType::verticalCenter] = anchors[AnchorType::bottom] - (height / 2);
 }
 
 HRESULT Window::CreateGraphicsResources()
@@ -19,24 +32,10 @@ HRESULT Window::CreateGraphicsResources()
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
 
 		hr = factory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(),
-			D2D1::HwndRenderTargetProperties(GetHandle(), size),
+			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_SOFTWARE, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED)),
+			D2D1::HwndRenderTargetProperties(GetHandle(), size, D2D1_PRESENT_OPTIONS_RETAIN_CONTENTS),
 			&renderTarget
 		);
-
-		hr = dwriteFactory->CreateTextFormat(
-            L"Consolas",
-            NULL,
-            DWRITE_FONT_WEIGHT_NORMAL,
-            DWRITE_FONT_STYLE_NORMAL,
-            DWRITE_FONT_STRETCH_NORMAL,
-            14.0f,
-            L"", //locale
-            &textFormat
-        );
-
-		textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-        textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
 		if (SUCCEEDED(hr))
 		{
@@ -60,7 +59,7 @@ void Window::DiscardGraphicsResources()
 	SafeRelease(&renderTarget);
 }
 
-void Window::OnPaint()
+void Window::OnPaint(bool drawEverything)
 {
 	HRESULT hr = CreateGraphicsResources();
 	if (SUCCEEDED(hr))
@@ -70,11 +69,17 @@ void Window::OnPaint()
 
 		renderTarget->BeginDraw();
 
-		renderTarget->Clear(backgroundColor);
+		if (drawEverything)
+			renderTarget->Clear(backgroundColor);
 
 		for (Control* control : scene)
 		{
-			control->update();
+			if (control->redrawRequested || drawEverything)
+			{
+				control->update();
+				if (!drawEverything)
+					control->invokeSignal("on_update");
+			}
 		}
 
 		hr = renderTarget->EndDraw();
@@ -85,13 +90,6 @@ void Window::OnPaint()
 		EndPaint(GetHandle(), &ps);
 	}
 }
-
-/*
-bool intersecting(int x, int y, AABB aabb)
-{
-	return (x > aabb.left && x < aabb.right) && (y > aabb.top && y < aabb.bottom);
-}
-*/
 
 void Window::OnMouseMove(int x, int y)
 {
@@ -119,12 +117,30 @@ void Window::OnMouseMove(int x, int y)
 
 void Window::OnPrimaryMouseButtonDown(int x, int y)
 {
-	
+	for (MouseArea* mouseArea : mouseAreas)
+	{
+		if (mouseArea->mouseTracking)
+		{
+			if (mouseArea->intersect(x, y))
+			{
+				mouseArea->sendPrimaryMouseButtonDown();
+			}
+		}
+	}
 }
 
 void Window::OnPrimaryMouseButtonUp(int x, int y)
 {
-
+	for (MouseArea* mouseArea : mouseAreas)
+	{
+		if (mouseArea->mouseTracking)
+		{
+			if (mouseArea->intersect(x, y))
+			{
+				mouseArea->sendPrimaryMouseButtonUp();
+			}
+		}
+	}
 }
 
 void Window::OnSecondaryMouseButtonDown(int x, int y) { }  // overridable
@@ -142,7 +158,9 @@ void Window::OnResize()
 		renderTarget->Resize(size);
 
 		CalculateLayout((float)size.width, (float)size.height);
-		InvalidateRect(GetHandle(), NULL, FALSE);
+
+		// force redraw everything
+		OnPaint(true);
 	}
 }
 
@@ -185,6 +203,7 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			return -1;
 		}
+		resource.dwriteFactory = dwriteFactory;
 		OnPaint();
 		return 0;
 
@@ -223,11 +242,11 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_SETCURSOR:
-        if (LOWORD(lparam) == HTCLIENT)
-        {
-            SetCursor(cursorShape);
-            return TRUE;
-        }
+    	if (LOWORD(lparam) == HTCLIENT)
+    	{
+    		SetCursor(cursorShape);
+    		return TRUE;
+    	}
 
 	default:
 		return DefWindowProc(GetHandle(), msg, wparam, lparam);

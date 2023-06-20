@@ -1,32 +1,37 @@
 #include <window.h>
-#include <shitlog.h>
-#include <rectangle.h>
-#include <mousearea.h>
+#include <button.h>
+#include <label.h>
+
+class DXButton : public Button
+{
+public:
+	DXButton(Control* parent, float x, float y, float width, float height)
+	: Button(parent, x, y, width, height)
+	{
+		Rect* overlay = new Rect(this, 0, 0, 0, 2);
+		overlay->setColor(Color(0.51, 0.255, 0));
+		overlay->setAnchor(AnchorType::left, AnchorType::left);
+		overlay->setAnchor(AnchorType::right, AnchorType::right);
+		overlay->setAnchor(AnchorType::top, AnchorType::bottom);
+	}
+};
 
 class MainWindow : public Window
 {
-	Rect* rect;
-
+public:
 	void Init()
 	{
-		backgroundColor = D2D1::ColorF(0.2, 0.25, 0.3);
+		backgroundColor = Color(0.2, 0.25, 0.3);
 
-		rect = new Rect(this, 100, 100, 350, 350);
-		rect->setColor(D2D1::ColorF(1.0, 0.5, 0.0));
-		push(rect);
+		Rect* bottomPanel = new Rect(this, 0, 0, 0, 80);
+		bottomPanel->setColor(Color(0.098, 0.122, 0.145));
+		bottomPanel->setAnchor(AnchorType::bottom, AnchorType::bottom);
+		bottomPanel->setAnchor(AnchorType::left, AnchorType::left);
+		bottomPanel->setAnchor(AnchorType::right, AnchorType::right);
 
-		Rect* rect1 = new Rect(rect, 0, 0, 100, 100);
-		rect1->is_debug = true;
-		rect1->setAnchor(AnchorType::left, AnchorType::left);
-		rect1->setAnchor(AnchorType::right, AnchorType::right);
-		rect1->setAnchor(AnchorType::bottom, AnchorType::bottom);
-		push(rect1);
-
-	}
-
-	void CalculateLayout(float width, float height)
-	{
-		rect->move((width / 2) - rect->width / 2, (height / 2) - rect->height / 2);
+		DXButton* button = new DXButton(bottomPanel, 0, 0, 100, 32);
+		button->setAnchor(AnchorType::verticalCenter, AnchorType::verticalCenter);
+		button->setAnchor(AnchorType::horizontalCenter, AnchorType::horizontalCenter);
 	}
 };
 

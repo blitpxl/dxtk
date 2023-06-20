@@ -22,14 +22,13 @@ class Window : public BaseWindow<Window>, public Control
 protected:
 	ID2D1Factory* factory;
 	IDWriteFactory* dwriteFactory;
-	D2D1_COLOR_F backgroundColor;
 
 	std::vector<Control*> scene;
 	std::vector<MouseArea*> mouseAreas;
 
 	virtual void Init() = 0;
-	virtual void CalculateLayout(float width, float height) {};
-	virtual void OnPaint();
+	virtual void CalculateLayout(float width, float height);
+	virtual void OnPaint(bool drawEverything = false);
 	virtual void OnMouseMove(int x, int y);
 	virtual void OnPrimaryMouseButtonDown(int x, int y);
 	virtual void OnPrimaryMouseButtonUp(int x, int y);
@@ -38,17 +37,16 @@ protected:
 	HRESULT CreateGraphicsResources();
 	void DiscardGraphicsResources();
 	void OnResize();
-
-	void push(Control* control);
-	void push(MouseArea* mouseArea);
-	void redraw();
-	void setCursor(LPWSTR cursorName);
 public:
-	IDWriteTextFormat* textFormat;
 	ID2D1HwndRenderTarget* renderTarget;
+	D2D1_COLOR_F backgroundColor;
 
 	Window();
 
+	void redraw();
+	void setCursor(LPWSTR cursorName);
+	void push(Control* control);
+	void push(MouseArea* mouseArea);
 	PCWSTR WindowClassName() const { return L"Window"; }
 	LRESULT HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam);
 };

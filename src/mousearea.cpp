@@ -1,4 +1,5 @@
 #include <mousearea.h>
+#include <window.h>
 
 MouseArea::MouseArea(Control* parent, float x, float y, float width, float height)
 : Control(parent)
@@ -8,6 +9,7 @@ MouseArea::MouseArea(Control* parent, float x, float y, float width, float heigh
 	this->width = width;
 	this->height = height;
 	move(x, y);
+	resource.window->push(this);
 }
 
 void MouseArea::sendMouseEnter()

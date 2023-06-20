@@ -3,6 +3,9 @@
 #define UNICODE
 #endif
 
+#define WIN32_LEAN_AND_MEAN
+#define NOCOMM
+
 #include <windows.h>
 #include <dwmapi.h>
 

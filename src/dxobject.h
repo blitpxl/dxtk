@@ -1,4 +1,9 @@
 #pragma once
+
+#ifndef UNICODE
+#define UNICODE
+#endif
+
 #include <string>
 #include <unordered_map>
 #include <vector>
