@@ -4,7 +4,7 @@
 Window::Window()
 : factory(NULL), renderTarget(NULL), Control()
 {
-	is_window = true; 
+	is_window = true;
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
 	resource.window = this;
 }
@@ -27,13 +27,13 @@ HRESULT Window::CreateGraphicsResources()
 	if (renderTarget == NULL)
 	{
 		RECT rc;
-		GetClientRect(GetHandle(), &rc);
+		GetClientRect(getHandle(), &rc);
 
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
 
 		hr = factory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_SOFTWARE, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED)),
-			D2D1::HwndRenderTargetProperties(GetHandle(), size, D2D1_PRESENT_OPTIONS_RETAIN_CONTENTS),
+			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED)),
+			D2D1::HwndRenderTargetProperties(getHandle(), size),
 			&renderTarget
 		);
 
@@ -59,27 +59,21 @@ void Window::DiscardGraphicsResources()
 	SafeRelease(&renderTarget);
 }
 
-void Window::OnPaint(bool drawEverything)
+void Window::OnPaint()
 {
 	HRESULT hr = CreateGraphicsResources();
 	if (SUCCEEDED(hr))
 	{
 		PAINTSTRUCT ps;
-		BeginPaint(GetHandle(), &ps);
+		BeginPaint(getHandle(), &ps);
 
 		renderTarget->BeginDraw();
 
-		if (drawEverything)
-			renderTarget->Clear(backgroundColor);
+		renderTarget->Clear(backgroundColor);
 
 		for (Control* control : scene)
 		{
-			if (control->redrawRequested || drawEverything)
-			{
-				control->update();
-				if (!drawEverything)
-					control->invokeSignal("on_update");
-			}
+			control->update();
 		}
 
 		hr = renderTarget->EndDraw();
@@ -87,7 +81,7 @@ void Window::OnPaint(bool drawEverything)
 		{
 			DiscardGraphicsResources();
 		}
-		EndPaint(GetHandle(), &ps);
+		EndPaint(getHandle(), &ps);
 	}
 }
 
@@ -151,7 +145,7 @@ void Window::OnResize()
 	if (renderTarget != NULL)
 	{
 		RECT rc;
-		GetClientRect(GetHandle(), &rc);
+		GetClientRect(getHandle(), &rc);
 
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
 
@@ -159,8 +153,7 @@ void Window::OnResize()
 
 		CalculateLayout((float)size.width, (float)size.height);
 
-		// force redraw everything
-		OnPaint(true);
+		redraw();
 	}
 }
 
@@ -172,12 +165,11 @@ void Window::push(Control* control)
 void Window::push(MouseArea* mouseArea)
 {
 	mouseAreas.push_back(mouseArea);
-	scene.push_back(mouseArea);
 }
 
 void Window::redraw()
 {
-	InvalidateRect(GetHandle(), NULL, FALSE);
+	InvalidateRect(getHandle(), NULL, FALSE);
 }
 
 void Window::setCursor(LPWSTR cursorName)
@@ -190,7 +182,7 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg)
 	{
 	case WM_CREATE:
-		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory)))
+		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &factory)))
 		{
 			return -1;
 		}
@@ -249,6 +241,6 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
     	}
 
 	default:
-		return DefWindowProc(GetHandle(), msg, wparam, lparam);
+		return DefWindowProc(getHandle(), msg, wparam, lparam);
 	}
 }

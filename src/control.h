@@ -24,6 +24,7 @@ enum class AnchorType
 	bottom,
 	horizontalCenter,
 	verticalCenter,
+	center,
 	fill,
 	none
 };
@@ -42,9 +43,7 @@ struct TargetAnchors
 class Control : public DxObject
 {
 protected:
-	bool is_window = false;
 	TargetAnchors targetAnchors;
-
 public:
 	static inline SharedResource resource;
 	float x;
@@ -53,18 +52,19 @@ public:
 	float localY;
 	float width;
 	float height;
+	float anchorPadding;
+	bool is_window = false;
+	bool is_debug = false;
 	Control* parent;
 	std::unordered_map<AnchorType, float> anchors;
-	bool clearBeforeDraw = false;
-
-	bool is_debug = false;
-	bool redrawRequested = true;
 
 	Control();
 	Control(Control* parent);
+
 	void setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor = AnchorType::none);
-	void move(float x, float y);
+	void setAnchorPadding(float padding);
 	void requestRedraw();
+	virtual void move(float x, float y);
 	virtual void resize(float width, float height);
 	virtual void update();
 };

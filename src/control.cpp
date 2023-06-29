@@ -11,6 +11,7 @@ Control::Control()
 	localY = 0;
 	width = 0;
 	height = 0;
+	anchorPadding = 0;
 
 	anchors[AnchorType::left] = x;
 	anchors[AnchorType::top] = y;
@@ -24,7 +25,6 @@ Control::Control(Control* parent)
 {
 	resource.renderTarget = parent->resource.renderTarget;
 	this->parent = parent;
-	parent->registerSignal("on_update", [this](){ requestRedraw(); });
 
 	x = 0;
 	y = 0;
@@ -32,6 +32,7 @@ Control::Control(Control* parent)
 	localY = 0;
 	width = 0;
 	height = 0;
+	anchorPadding = 0;
 
 	anchors[AnchorType::left] = x;
 	anchors[AnchorType::top] = y;
@@ -46,12 +47,10 @@ void Control::move(float x, float y)
 {
 	this->localX = x;
 	this->localY = y;
-	redrawRequested = true;
 }
 
 void Control::requestRedraw()
 {
-	redrawRequested = true;
 	resource.window->redraw();
 }
 
@@ -59,7 +58,6 @@ void Control::resize(float width, float height)
 {
 	this->width = width;
 	this->height = height;
-	redrawRequested = true;
 }
 
 void Control::setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor)
@@ -87,7 +85,16 @@ void Control::setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor)
 	case AnchorType::verticalCenter:
 		targetAnchors.verticalCenter = targetParentAnchor;
 		return;
+	case AnchorType::center:
+		targetAnchors.horizontalCenter = AnchorType::horizontalCenter;
+		targetAnchors.verticalCenter = AnchorType::verticalCenter;
+		return;
 	}
+}
+
+void Control::setAnchorPadding(float padding)
+{
+	anchorPadding = padding;
 }
 
 void Control::update()
@@ -95,12 +102,12 @@ void Control::update()
 	if (targetAnchors.fill != AnchorType::fill)
 	{
 		if (targetAnchors.left != AnchorType::none)
-			x = parent->anchors[targetAnchors.left];
+			x = parent->anchors[targetAnchors.left] + anchorPadding;
 		else
 			this->x = parent->x + localX;
 	
 		if (targetAnchors.top != AnchorType::none)
-			y = parent->anchors[targetAnchors.top];
+			y = parent->anchors[targetAnchors.top] + anchorPadding;
 		else
 			this->y = parent->y + localY;
 	
@@ -108,11 +115,11 @@ void Control::update()
 		{
 			if (targetAnchors.left != AnchorType::none) // if the opposite anchor is set, then stretch the control rather than moving them
 			{
-				width = parent->width;
+				width = parent->width - (anchorPadding * 2);
 			}
 			else
 			{
-				x = parent->anchors[targetAnchors.right] - width;
+				x = (parent->anchors[targetAnchors.right] - width) - anchorPadding;
 			}
 		}
 
@@ -124,7 +131,7 @@ void Control::update()
 			}
 			else
 			{
-				y = parent->anchors[targetAnchors.bottom] - height;
+				y = (parent->anchors[targetAnchors.bottom] - height) - anchorPadding;
 			}
 		}
 
@@ -140,10 +147,10 @@ void Control::update()
 	}
 	else
 	{
-		this->x = parent->x + localX;
-		this->y = parent->y + localY;
-		width = parent->width;
-		height = parent->height;
+		this->x = (parent->x + localX) + anchorPadding;
+		this->y = (parent->y + localY) + anchorPadding;
+		width = parent->width - (anchorPadding * 2);
+		height = parent->height - (anchorPadding * 2);
 	}
 	resize(width, height);
 
@@ -151,6 +158,6 @@ void Control::update()
 	anchors[AnchorType::top] = y;
 	anchors[AnchorType::right] = x + width;
 	anchors[AnchorType::bottom] = y + height;
-	anchors[AnchorType::horizontalCenter] = anchors[AnchorType::right] - (width / 2);
+	anchors[AnchorType::horizontalCenter] = (anchors[AnchorType::right] - (width / 2));
 	anchors[AnchorType::verticalCenter] = anchors[AnchorType::bottom] - (height / 2);
 }

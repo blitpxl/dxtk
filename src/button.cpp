@@ -4,7 +4,7 @@
 Button::Button(Control* parent, float x, float y, float width, float height)
 : Rect(parent, x, y, width, height)
 {
-	stateColor.normal = Color(1.0, 0.5, 0.0);
+	stateColor.normal = Color(1.0, 0.5, 0.2);
 	stateColor.hover = Color(1.0, 0.6, 0.2);
 	stateColor.pressed = Color(0.8, 0.3, 0.0);
 	brush->SetColor(stateColor.normal);

@@ -41,7 +41,7 @@ public:
 
 	BaseWindow() : handle(NULL) { }
 
-	BOOL Create(LPCWSTR windowName, int x = -1, int y = -1, int w = -1, int h = -1)
+	BOOL create(LPCWSTR windowName, int x = -1, int y = -1, int w = -1, int h = -1)
 	{
 		this->x = x;
 		this->y = y;
@@ -79,25 +79,25 @@ public:
 		return (handle ? TRUE : FALSE);
 	}
 
-	void SetDark()
+	void setDark()
 	{
 		BOOL dark = TRUE;
-		DwmSetWindowAttribute(GetHandle(), 20, &dark, sizeof(dark));
+		DwmSetWindowAttribute(getHandle(), 20, &dark, sizeof(dark));
 	}
 
-	void Move(int x, int y)
+	void move(int x, int y)
 	{
-		MoveWindow(GetHandle(), x, y, w, h, FALSE);
+		MoveWindow(getHandle(), x, y, w, h, FALSE);
 	}
 
-	void Resize(int w, int h)
+	void resize(int w, int h)
 	{
-		MoveWindow(GetHandle(), x, y, w, h, FALSE);
+		MoveWindow(getHandle(), x, y, w, h, FALSE);
 	}
 
-	HWND GetHandle() const { return handle; }
+	HWND getHandle() const { return handle; }
 
-	void InitMessageLoop()
+	void initMessageLoop()
 	{
 		MSG msg = { };
 		while (GetMessage(&msg, NULL, 0, 0))

@@ -18,6 +18,8 @@ template <class T> void SafeRelease(T **ppT)
 
 class Window : public BaseWindow<Window>, public Control
 {
+	friend Control;
+	
 	HCURSOR cursorShape = LoadCursor(NULL, IDC_ARROW);
 protected:
 	ID2D1Factory* factory;
@@ -28,7 +30,7 @@ protected:
 
 	virtual void Init() = 0;
 	virtual void CalculateLayout(float width, float height);
-	virtual void OnPaint(bool drawEverything = false);
+	virtual void OnPaint();
 	virtual void OnMouseMove(int x, int y);
 	virtual void OnPrimaryMouseButtonDown(int x, int y);
 	virtual void OnPrimaryMouseButtonUp(int x, int y);
@@ -40,6 +42,7 @@ protected:
 public:
 	ID2D1HwndRenderTarget* renderTarget;
 	D2D1_COLOR_F backgroundColor;
+	bool redrawEverything;
 
 	Window();
 

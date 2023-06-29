@@ -38,7 +38,6 @@ void Label::update()
 {
 	Control::update();
 	resource.renderTarget->SetTransform(D2D1::Matrix3x2F::Translation(x, y));
-	resource.renderTarget->PushAxisAlignedClip(rect, D2D1_ANTIALIAS_MODE_ALIASED);
 	resource.renderTarget->DrawText(
 		text,
 		wcslen(text),
@@ -46,6 +45,4 @@ void Label::update()
 		rect,
 		brush
 	);
-	resource.renderTarget->PopAxisAlignedClip();
-	redrawRequested = false;
 }

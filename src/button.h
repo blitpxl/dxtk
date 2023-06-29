@@ -14,8 +14,9 @@ class Button : public Rect
 {
 	MouseArea* mouseArea;
 	Label* label;
-	StateColor stateColor;
 public:
+	StateColor stateColor;
+
 	Button(Control* parent, float x, float y, float width, float height);
 	void setText(LPCWSTR text);
 	void setTextColor(D2D1_COLOR_F color);
