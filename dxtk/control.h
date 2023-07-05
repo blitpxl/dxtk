@@ -1,13 +1,21 @@
 #pragma once
+#include "unicode.h"
 #include <unordered_map>
-#include <dxobject.h>
 #include <d2d1.h>
 #include <dwrite.h>
-#include <shitlog.h>
-#include <d2dalias.h>
+
+#include "dxobject.h"
+#include "shitlog.h"
+#include "d2dalias.h"
 
 // declaration for SharedResource
 class Window;
+
+struct Point
+{
+	float x;
+	float y;
+};
 
 struct SharedResource
 {
@@ -61,10 +69,16 @@ public:
 	Control();
 	Control(Control* parent);
 
+	void setName(std::string const& name);
 	void setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor = AnchorType::none);
 	void setAnchorPadding(float padding);
 	void requestRedraw();
+	Point mapToLocal(float globalX, float globalY);
 	virtual void move(float x, float y);
+	virtual void setX(float x);
+	virtual void setY(float y);
 	virtual void resize(float width, float height);
+	virtual void setWidth(float width);
+	virtual void setHeight(float height);
 	virtual void update();
 };

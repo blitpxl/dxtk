@@ -91,6 +91,8 @@ void Window::OnMouseMove(int x, int y)
 	{
 		if (mouseArea->mouseTracking)
 		{
+			mouseArea->sendMouseDrag(x, y);
+
 			if (mouseArea->intersect(x, y))
 			{
 				if (!mouseArea->mouseEntered)
@@ -117,10 +119,11 @@ void Window::OnPrimaryMouseButtonDown(int x, int y)
 		{
 			if (mouseArea->intersect(x, y))
 			{
-				mouseArea->sendPrimaryMouseButtonDown();
+				mouseArea->sendPrimaryMouseButtonDown(x, y);
 			}
 		}
 	}
+	invokeSignal("primary_button_down");
 }
 
 void Window::OnPrimaryMouseButtonUp(int x, int y)
@@ -131,10 +134,11 @@ void Window::OnPrimaryMouseButtonUp(int x, int y)
 		{
 			if (mouseArea->intersect(x, y))
 			{
-				mouseArea->sendPrimaryMouseButtonUp();
+				mouseArea->sendPrimaryMouseButtonUp(x, y);
 			}
 		}
 	}
+	invokeSignal("primary_button_up");
 }
 
 void Window::OnSecondaryMouseButtonDown(int x, int y) { }  // overridable

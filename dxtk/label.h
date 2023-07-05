@@ -1,8 +1,10 @@
 #pragma once
-#include <rectangle.h>
+#include "rectangle.h"
 
 class Label : public Rect
 {
+	DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment;
+	DWRITE_TEXT_ALIGNMENT textAlignment;
 	IDWriteTextFormat* textFormat;
 public:
 	LPCWSTR text;
@@ -11,5 +13,6 @@ public:
 	void setText(LPCWSTR text);
 	void setTextAlignment(DWRITE_TEXT_ALIGNMENT alignment);
 	void setParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment);
+	void setTextFormat(PCWSTR fontFamily, float fontSize = 14.0f, DWRITE_FONT_WEIGHT fontWeight = FontWeightRegular, DWRITE_FONT_STYLE fontStyle = FontStyleNormal);
 	void update() override;
 };

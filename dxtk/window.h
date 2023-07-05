@@ -1,7 +1,7 @@
 #pragma once
-#include <abstractwindow.h>
-#include <control.h>
-#include <mousearea.h>
+#include "abstractwindow.h"
+#include "control.h"
+#include "mousearea.h"
 #include <windowsx.h>
 #include <d2d1.h>
 #include <dwrite.h>
@@ -27,6 +27,7 @@ protected:
 
 	std::vector<Control*> scene;
 	std::vector<MouseArea*> mouseAreas;
+	std::unordered_map<std::string, Control*> nameLookup;
 
 	virtual void Init() = 0;
 	virtual void CalculateLayout(float width, float height);

@@ -1,11 +1,7 @@
-#pragma once
-#ifndef UNICODE
-#define UNICODE
-#endif
-
 #define WIN32_LEAN_AND_MEAN
 #define NOCOMM
 
+#include "unicode.h"
 #include <windows.h>
 #include <dwmapi.h>
 
@@ -79,6 +75,16 @@ public:
 		return (handle ? TRUE : FALSE);
 	}
 
+	void show()
+	{
+		ShowWindow(getHandle(), SW_NORMAL);
+	}
+
+	void minimize()
+	{
+		ShowWindow(getHandle(), SW_MINIMIZE);
+	}
+
 	void setDark()
 	{
 		BOOL dark = TRUE;
@@ -97,7 +103,7 @@ public:
 
 	HWND getHandle() const { return handle; }
 
-	void initMessageLoop()
+	void init()
 	{
 		MSG msg = { };
 		while (GetMessage(&msg, NULL, 0, 0))

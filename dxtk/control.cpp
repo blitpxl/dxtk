@@ -1,6 +1,6 @@
 #include "control.h"
 #include "shitlog.h"
-#include <window.h>
+#include "window.h"
 
 // this constructor should only be used by the window
 Control::Control()
@@ -43,10 +43,9 @@ Control::Control(Control* parent)
 	resource.window->push(this);
 }
 
-void Control::move(float x, float y)
+void Control::setName(std::string const& name)
 {
-	this->localX = x;
-	this->localY = y;
+	resource.window->nameLookup[name] = this;
 }
 
 void Control::requestRedraw()
@@ -54,9 +53,43 @@ void Control::requestRedraw()
 	resource.window->redraw();
 }
 
+Point Control::mapToLocal(float globalX, float globalY)
+{
+	Point result(0, 0);
+	result.x = globalX - x;
+	result.y = globalY - y;
+	return result;
+}
+
+void Control::move(float x, float y)
+{
+	this->localX = x;
+	this->localY = y;
+}
+
+void Control::setX(float x)
+{
+	this->localX = x;
+}
+
+void Control::setY(float y)
+{
+	this->localY = y;
+}
+
 void Control::resize(float width, float height)
 {
 	this->width = width;
+	this->height = height;
+}
+
+void Control::setWidth(float width)
+{
+	this->width = width;
+}
+
+void Control::setHeight(float height)
+{
 	this->height = height;
 }
 

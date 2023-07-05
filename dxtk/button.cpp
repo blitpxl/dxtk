@@ -1,5 +1,5 @@
-#include <button.h>
-#include <window.h>
+#include "button.h"
+#include "window.h"
 
 Button::Button(Control* parent, float x, float y, float width, float height)
 : Rect(parent, x, y, width, height)
@@ -11,8 +11,8 @@ Button::Button(Control* parent, float x, float y, float width, float height)
 
 	mouseArea = new MouseArea(this, 0, 0, 0, 0);
 	mouseArea->setAnchor(AnchorType::fill);
-	mouseArea->registerSignal("mouse_enter", [this](){ resource.window->setCursor(IDC_HAND); setColor(stateColor.hover); });
-	mouseArea->registerSignal("mouse_leave", [this](){ resource.window->setCursor(IDC_ARROW); setColor(stateColor.normal); });
+	mouseArea->registerSignal("mouse_enter", [this](){ setColor(stateColor.hover); });
+	mouseArea->registerSignal("mouse_leave", [this](){ setColor(stateColor.normal); });
 	mouseArea->registerSignal("primary_button_down", [this](){ setColor(stateColor.pressed); invokeSignal("pressed"); });
 	mouseArea->registerSignal("primary_button_up", [this](){ setColor(stateColor.hover); invokeSignal("clicked"); invokeSignal("released"); });
 

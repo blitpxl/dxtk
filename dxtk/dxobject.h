@@ -1,9 +1,4 @@
 #pragma once
-
-#ifndef UNICODE
-#define UNICODE
-#endif
-
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -12,7 +7,6 @@
 class DxObject
 {
 	std::unordered_map<std::string, std::vector<std::function<void(void)>>> signals;
-
 public:
 	DxObject() = default;
 	~DxObject() { invokeSignal("destroyed"); }

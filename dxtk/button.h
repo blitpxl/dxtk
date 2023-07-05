@@ -1,7 +1,7 @@
 #pragma once
-#include <rectangle.h>
-#include <label.h>
-#include <mousearea.h>
+#include "rectangle.h"
+#include "label.h"
+#include "mousearea.h"
 
 struct StateColor
 {

@@ -1,4 +1,4 @@
-#include <label.h>
+#include "label.h"
 
 Label::Label(Control* parent, float x, float y, float width, float height)
 : Rect(parent, x, y, width, height)
@@ -15,6 +15,8 @@ Label::Label(Control* parent, float x, float y, float width, float height)
     );
 	textFormat->SetTextAlignment(TextAlignCenter);
     textFormat->SetParagraphAlignment(ParagraphAlignCenter);
+    paragraphAlignment = ParagraphAlignCenter;
+    textAlignment = TextAlignCenter;
     text = L"";
 }
 
@@ -27,11 +29,29 @@ void Label::setText(LPCWSTR text)
 void Label::setTextAlignment(DWRITE_TEXT_ALIGNMENT alignment)
 {
 	textFormat->SetTextAlignment(alignment);
+	textAlignment = alignment;
 }
 
 void Label::setParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment)
 {
 	textFormat->SetParagraphAlignment(alignment);
+	paragraphAlignment = alignment;
+}
+
+void Label::setTextFormat(PCWSTR fontFamily, float fontSize, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle)
+{
+	resource.dwriteFactory->CreateTextFormat(
+		fontFamily,
+		NULL,
+		fontWeight,
+		fontStyle,
+		DWRITE_FONT_STRETCH_NORMAL,
+		fontSize,
+		L"",
+		&textFormat
+	);
+	textFormat->SetTextAlignment(textAlignment);
+    textFormat->SetParagraphAlignment(paragraphAlignment);
 }
 
 void Label::update()
