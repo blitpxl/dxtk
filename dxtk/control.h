@@ -75,6 +75,7 @@ public:
 	void setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor = AnchorType::none);
 	void setAnchorPadding(float padding);
 	void requestRedraw();
+	void setDirty();
 	Point mapToLocal(float globalX, float globalY);
 	virtual void move(float x, float y);
 	virtual void setX(float x);

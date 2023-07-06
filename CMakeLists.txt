@@ -13,6 +13,7 @@ add_library(dxtk STATIC
 	dxtk/mousearea.cpp
 	dxtk/rectangle.cpp
 	dxtk/row.cpp
+	dxtk/slider.cpp
 	dxtk/timer.cpp
 	dxtk/window.cpp
 )

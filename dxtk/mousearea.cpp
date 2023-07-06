@@ -1,10 +1,12 @@
 #include "mousearea.h"
 #include "window.h"
+#include <algorithm>
 
 MouseArea::MouseArea(Control* parent, float x, float y, float width, float height)
 : Control(parent), cursorName(IDC_ARROW), mouseTracking(true), 
   mouseEntered(false), dragging(false), mouseX(0.0), mouseY(0.0),
-  draggable(false), dragPoint(0, 0)
+  draggable(false), dragPoint(0, 0), minDragX(-FLT_MAX), minDragY(-FLT_MAX),
+  maxDragX(FLT_MAX), maxDragY(FLT_MAX)
 {
 	this->x = x;
 	this->y = y;
@@ -19,7 +21,8 @@ MouseArea::MouseArea(Control* parent, float x, float y, float width, float heigh
 	registerSignal("mouse_drag", [this](){
 		if (draggable)
 		{
-			this->parent->move(mouseX - dragPoint.x, mouseY - dragPoint.y);
+			this->parent->setX(std::clamp(mouseX - dragPoint.x, minDragX, maxDragX));
+			this->parent->setY(std::clamp(mouseY - dragPoint.y, minDragY, maxDragY));
 		}
 	});
 }
@@ -73,4 +76,16 @@ void MouseArea::setCursor(LPWSTR cursorName)
 void MouseArea::setDraggable(bool draggable)
 {
 	this->draggable = draggable;
+}
+
+void MouseArea::setDragLimitX(float minValue, float maxValue)
+{
+	minDragX = minValue;
+	maxDragX = maxValue;
+}
+
+void MouseArea::setDragLimitY(float minValue, float maxValue)
+{
+	minDragY = minValue;
+	maxDragY = maxValue;
 }

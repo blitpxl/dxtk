@@ -12,9 +12,9 @@ struct StateColor
 
 class Button : public Rect
 {
+public:
 	MouseArea* mouseArea;
 	Label* label;
-public:
 	StateColor stateColor;
 
 	Button(Control* parent, float x, float y, float width, float height);

@@ -12,6 +12,10 @@ public:
 	bool mouseEntered;
 	int mouseX;
 	int mouseY;
+	float minDragX;
+	float minDragY;
+	float maxDragX;
+	float maxDragY;
 
 	MouseArea(Control* parent, float x, float y, float width, float height);
 
@@ -25,4 +29,6 @@ public:
 	bool intersect(int x, int y);
 	void setCursor(LPWSTR cursorName);
 	void setDraggable(bool draggable);
+	void setDragLimitX(float minValue, float maxValue);
+	void setDragLimitY(float minValue, float maxValue);
 };

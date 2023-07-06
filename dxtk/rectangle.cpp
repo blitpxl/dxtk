@@ -3,7 +3,7 @@
 #include "window.h"
 
 Rect::Rect(Control* parent, float x, float y, float width, float height)
-: Control(parent)
+: Control(parent), rounded(false)
 {
 	is_drawable = true;
 	this->x = x;
@@ -12,7 +12,23 @@ Rect::Rect(Control* parent, float x, float y, float width, float height)
 	this->height = height;
 	move(x, y);
 	rect = D2D1::RectF(0, 0, width, height);
+	rRect.rect = rect;
+	rRect.radiusX = 8;
+	rRect.radiusY = 8;
 	resource.renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &brush);
+}
+
+void Rect::setRadius(float radius)
+{
+	if (radius > 0)
+	{
+		rounded = true;
+		rRect.radiusX = radius; rRect.radiusY = radius;
+	}
+	else
+	{
+		rounded = false;
+	}
 }
 
 void Rect::move(float x, float y)
@@ -38,6 +54,7 @@ void Rect::resize(float width, float height)
 	Control::resize(width, height);
 	rect.right = width;
 	rect.bottom = height;
+	rRect.rect = rect;
 	requestRedraw();
 }
 
@@ -67,5 +84,8 @@ void Rect::update()
 
 void Rect::draw()
 {
-	resource.renderTarget->FillRectangle(rect, brush);
+	if (rounded)
+		resource.renderTarget->FillRoundedRectangle(rRect, brush);
+	else
+		resource.renderTarget->FillRectangle(rect, brush);
 }

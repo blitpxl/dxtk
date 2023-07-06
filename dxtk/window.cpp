@@ -7,6 +7,7 @@ Window::Window()
 	is_window = true;
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
 	resource.window = this;
+	resource.renderTarget = renderTarget;
 }
 
 void Window::CalculateLayout(float width, float height)

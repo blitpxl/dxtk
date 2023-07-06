@@ -17,9 +17,6 @@ Control::Control()
 
 Control::Control(Control* parent)
 {
-	resource.renderTarget = parent->resource.renderTarget;
-	this->parent = parent;
-
 	x = 0;
 	y = 0;
 	localX = 0;
@@ -27,7 +24,10 @@ Control::Control(Control* parent)
 	width = 0;
 	height = 0;
 	anchorPadding = 0;
+	this->parent = parent;
 	resource.window->push(this);
+
+	parent->registerSignal("dirty", [this](){ setDirty(); });
 }
 
 void Control::setName(std::string const& name)
@@ -40,11 +40,17 @@ void Control::requestRedraw()
 	resource.window->redraw();
 }
 
+void Control::setDirty()
+{
+	is_dirty = true;
+	invokeSignal("dirty");  // notify the children too
+}
+
 Point Control::mapToLocal(float globalX, float globalY)
 {
 	Point result(0, 0);
-	result.x = globalX - x;
-	result.y = globalY - y;
+	result.x = (globalX - x) + parent->parent->x;
+	result.y = (globalY - y) + parent->parent->y;
 	return result;
 }
 
@@ -52,38 +58,44 @@ void Control::move(float x, float y)
 {
 	this->localX = x;
 	this->localY = y;
-	is_dirty = true;
+	setDirty();
+	invokeSignal("move");
 }
 
 void Control::setX(float x)
 {
 	this->localX = x;
-	is_dirty = true;
+	setDirty();
+	invokeSignal("move");
 }
 
 void Control::setY(float y)
 {
 	this->localY = y;
-	is_dirty = true;
+	setDirty();
+	invokeSignal("move");
 }
 
 void Control::resize(float width, float height)
 {
 	this->width = width;
 	this->height = height;
-	is_dirty = true;
+	setDirty();
+	invokeSignal("resize");
 }
 
 void Control::setWidth(float width)
 {
 	this->width = width;
-	is_dirty = true;
+	setDirty();
+	invokeSignal("resize");
 }
 
 void Control::setHeight(float height)
 {
 	this->height = height;
-	is_dirty = true;
+	setDirty();
+	invokeSignal("resize");
 }
 
 void Control::setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor)
@@ -116,13 +128,13 @@ void Control::setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor)
 		targetAnchors.verticalCenter = AnchorType::verticalCenter;
 		break;
 	}
-	is_dirty = true;
+	setDirty();
 }
 
 void Control::setAnchorPadding(float padding)
 {
 	anchorPadding = padding;
-	is_dirty = true;
+	setDirty();
 }
 
 void Control::update()
@@ -134,12 +146,12 @@ void Control::update()
 			if (targetAnchors.left != AnchorType::none)
 				x = parent->anchors[targetAnchors.left] + anchorPadding;
 			else
-				this->x = parent->x + localX;
+				x = parent->x + localX;
 		
 			if (targetAnchors.top != AnchorType::none)
 				y = parent->anchors[targetAnchors.top] + anchorPadding;
 			else
-				this->y = parent->y + localY;
+				y = parent->y + localY;
 		
 			if (targetAnchors.right != AnchorType::none)
 			{
