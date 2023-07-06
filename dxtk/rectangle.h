@@ -17,4 +17,5 @@ public:
 	void setHeight(float height) override;
 	void setColor(D2D1_COLOR_F color);
 	virtual void update() override;
+	virtual void draw() override;
 };

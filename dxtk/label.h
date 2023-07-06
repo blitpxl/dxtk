@@ -15,4 +15,5 @@ public:
 	void setParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment);
 	void setTextFormat(PCWSTR fontFamily, float fontSize = 14.0f, DWRITE_FONT_WEIGHT fontWeight = FontWeightRegular, DWRITE_FONT_STYLE fontStyle = FontStyleNormal);
 	void update() override;
+	void draw() override;
 };

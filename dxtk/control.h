@@ -63,6 +63,8 @@ public:
 	float anchorPadding;
 	bool is_window = false;
 	bool is_debug = false;
+	bool is_drawable = false;
+	bool is_dirty = true;
 	Control* parent;
 	std::unordered_map<AnchorType, float> anchors;
 
@@ -81,4 +83,5 @@ public:
 	virtual void setWidth(float width);
 	virtual void setHeight(float height);
 	virtual void update();
+	virtual void draw();
 };

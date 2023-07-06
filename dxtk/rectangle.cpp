@@ -5,6 +5,7 @@
 Rect::Rect(Control* parent, float x, float y, float width, float height)
 : Control(parent)
 {
+	is_drawable = true;
 	this->x = x;
 	this->y = y;
 	this->width = width;
@@ -62,5 +63,9 @@ void Rect::update()
 {
 	Control::update();
 	resource.renderTarget->SetTransform(D2D1::Matrix3x2F::Translation(x, y));
+}
+
+void Rect::draw()
+{
 	resource.renderTarget->FillRectangle(rect, brush);
 }

@@ -2,7 +2,7 @@
 #include "shitlog.h"
 
 Window::Window()
-: factory(NULL), renderTarget(NULL), Control()
+: factory(NULL), renderTarget(NULL), is_resizing(false), Control()
 {
 	is_window = true;
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
@@ -74,6 +74,8 @@ void Window::OnPaint()
 		for (Control* control : scene)
 		{
 			control->update();
+			if (control->is_drawable)
+				control->draw();
 		}
 
 		hr = renderTarget->EndDraw();
@@ -82,6 +84,8 @@ void Window::OnPaint()
 			DiscardGraphicsResources();
 		}
 		EndPaint(getHandle(), &ps);
+
+		is_resizing = false; // if the window was resizing
 	}
 }
 
@@ -152,12 +156,12 @@ void Window::OnResize()
 		GetClientRect(getHandle(), &rc);
 
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
-
 		renderTarget->Resize(size);
-
 		CalculateLayout((float)size.width, (float)size.height);
 
+		is_resizing = true;
 		redraw();
+		invokeSignal("resize");
 	}
 }
 

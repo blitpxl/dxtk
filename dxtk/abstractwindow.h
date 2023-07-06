@@ -65,7 +65,7 @@ public:
 			WindowClassName(),
 			windowName,
 			WS_OVERLAPPEDWINDOW,
-			this->x, this->y, this->w, this->h,
+			this->x, this->y, this->w+16, this->h+39,
 			NULL,
 			NULL,
 			GetModuleHandle(NULL),
@@ -91,14 +91,14 @@ public:
 		DwmSetWindowAttribute(getHandle(), 20, &dark, sizeof(dark));
 	}
 
-	void move(int x, int y)
+	void setPosition(int x, int y)
 	{
 		MoveWindow(getHandle(), x, y, w, h, FALSE);
 	}
 
-	void resize(int w, int h)
+	void setSize(int w, int h)
 	{
-		MoveWindow(getHandle(), x, y, w, h, FALSE);
+		MoveWindow(getHandle(), x, y, w+16, h+39, FALSE);
 	}
 
 	HWND getHandle() const { return handle; }

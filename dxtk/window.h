@@ -43,7 +43,7 @@ protected:
 public:
 	ID2D1HwndRenderTarget* renderTarget;
 	D2D1_COLOR_F backgroundColor;
-	bool redrawEverything;
+	bool is_resizing;
 
 	Window();
 

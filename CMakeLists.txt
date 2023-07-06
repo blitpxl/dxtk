@@ -3,7 +3,7 @@ project(demo)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-add_compile_options("/std:c++20" "/Od" "/Zi" "/DEBUG" "/EHsc" "/fsanitize=address")
+add_compile_options("/std:c++20" "/Od" "/Zi" "/DEBUG" "/EHsc")
 
 add_library(dxtk STATIC
 	dxtk/button.cpp

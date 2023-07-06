@@ -58,6 +58,11 @@ void Label::update()
 {
 	Control::update();
 	resource.renderTarget->SetTransform(D2D1::Matrix3x2F::Translation(x, y));
+}
+
+void Label::draw()
+{
+	printd(rect.right);
 	resource.renderTarget->DrawText(
 		text,
 		wcslen(text),
