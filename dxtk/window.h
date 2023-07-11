@@ -37,6 +37,7 @@ protected:
 	virtual void OnPrimaryMouseButtonUp(int x, int y);
 	virtual void OnSecondaryMouseButtonDown(int x, int y);
 	virtual void OnSecondaryMouseButtonUp(int x, int y);
+	virtual void OnKeyPress(WPARAM key);
 	HRESULT CreateGraphicsResources();
 	void DiscardGraphicsResources();
 	void OnResize();

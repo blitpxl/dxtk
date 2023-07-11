@@ -46,6 +46,14 @@ void Control::setDirty()
 	invokeSignal("dirty");  // notify the children too
 }
 
+LPCWSTR Control::toWString(std::string const& string)
+{
+	int wchars_num = MultiByteToWideChar( CP_UTF8 , 0 , string.c_str() , -1, NULL , 0 );
+	wchar_t* wstr = new wchar_t[wchars_num];
+	MultiByteToWideChar( CP_UTF8 , 0 , string.c_str() , -1, wstr , wchars_num );
+	return wstr;
+}
+
 Point Control::mapToLocal(float globalX, float globalY)
 {
 	Point result(0, 0);
@@ -165,7 +173,7 @@ void Control::update()
 				}
 			}
 	
-			if (targetAnchors.bottom != AnchorType::none)
+			if (targetAnchors.bottom != AnchorType::none) // same here but for top and bottom
 			{
 				if (targetAnchors.top != AnchorType::none)
 				{

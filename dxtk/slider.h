@@ -1,6 +1,7 @@
 #pragma once
 #include "rectangle.h"
 #include "mousearea.h"
+#include "mathutils.h"
 
 class Slider : public Rect
 {

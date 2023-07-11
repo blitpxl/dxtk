@@ -18,6 +18,6 @@ public:
 	StateColor stateColor;
 
 	Button(Control* parent, float x, float y, float width, float height);
-	void setText(LPCWSTR text);
+	void setText(std::string const& text);
 	void setTextColor(D2D1_COLOR_F color);
 };

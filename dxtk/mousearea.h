@@ -1,8 +1,10 @@
 #pragma once
 #include "control.h"
+#include <algorithm>
 
 class MouseArea : public Control
 {
+	static inline int zCounter;
 	LPWSTR cursorName;
 	bool dragging;
 	bool draggable;
@@ -16,6 +18,7 @@ public:
 	float minDragY;
 	float maxDragX;
 	float maxDragY;
+	int z;
 
 	MouseArea(Control* parent, float x, float y, float width, float height);
 

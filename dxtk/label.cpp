@@ -20,9 +20,9 @@ Label::Label(Control* parent, float x, float y, float width, float height)
     text = L"";
 }
 
-void Label::setText(LPCWSTR text)
+void Label::setText(std::string const& text)
 {
-	this->text = text;
+	this->text = toWString(text);
 	requestRedraw();
 }
 
@@ -38,10 +38,10 @@ void Label::setParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment)
 	paragraphAlignment = alignment;
 }
 
-void Label::setTextFormat(PCWSTR fontFamily, float fontSize, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle)
+void Label::setTextFormat(std::string const& fontFamily, float fontSize, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle)
 {
 	resource.dwriteFactory->CreateTextFormat(
-		fontFamily,
+		toWString(fontFamily),
 		NULL,
 		fontWeight,
 		fontStyle,
@@ -62,7 +62,6 @@ void Label::update()
 
 void Label::draw()
 {
-	printd(rect.right);
 	resource.renderTarget->DrawText(
 		text,
 		wcslen(text),

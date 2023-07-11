@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <d2d1.h>
 #include <dwrite.h>
+#include <string>
 
 #include "dxobject.h"
 #include "shitlog.h"
@@ -52,6 +53,7 @@ class Control : public DxObject
 {
 protected:
 	TargetAnchors targetAnchors;
+	std::wstring strbuf;
 public:
 	static inline SharedResource resource;
 	float x;
@@ -76,6 +78,7 @@ public:
 	void setAnchorPadding(float padding);
 	void requestRedraw();
 	void setDirty();
+	LPCWSTR toWString(std::string const& string);
 	Point mapToLocal(float globalX, float globalY);
 	virtual void move(float x, float y);
 	virtual void setX(float x);

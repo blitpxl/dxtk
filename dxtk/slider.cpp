@@ -1,5 +1,4 @@
 #include "slider.h"
-#include "mathutils.h"
 
 Slider::Slider(Control* parent, float x, float y, float width, float height)
 : Rect(parent, x, y, width, height), handlePos(0.0), minValue(0.0), maxValue(100.0), value(0.0)
@@ -28,6 +27,7 @@ Slider::Slider(Control* parent, float x, float y, float width, float height)
 	registerSignal("resize", [this](){
 		mouseArea->setDragLimitX(0, this->width - this->handle->width);
 		this->handle->setX(mapRange(this->handlePos, 0.0, 1.0, 0.0, this->width - this->handle->width));
+		this->valueBar->setWidth(this->handle->localX);
 	});
 	registerSignal("value_changed", [this](){
 		this->valueBar->setWidth(this->handle->localX);

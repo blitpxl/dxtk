@@ -19,10 +19,10 @@ Button::Button(Control* parent, float x, float y, float width, float height)
 
 	label = new Label(this, 0, 0, 0, 0);
 	label->setAnchor(AnchorType::fill);
-	label->setText(L"Button");
+	label->setText("Button");
 }
 
-void Button::setText(LPCWSTR text)
+void Button::setText(std::string const& text)
 {
 	label->setText(text);
 }

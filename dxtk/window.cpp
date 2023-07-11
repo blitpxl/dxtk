@@ -2,7 +2,7 @@
 #include "shitlog.h"
 
 Window::Window()
-: factory(NULL), renderTarget(NULL), is_resizing(false), Control()
+: Control(), factory(NULL), renderTarget(NULL), is_resizing(false)
 {
 	is_window = true;
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
@@ -92,8 +92,9 @@ void Window::OnPaint()
 
 void Window::OnMouseMove(int x, int y)
 {
-	for (MouseArea* mouseArea : mouseAreas)
+	for (auto it = mouseAreas.rbegin(); it != mouseAreas.rend(); ++it)
 	{
+		MouseArea* mouseArea = *it;
 		if (mouseArea->mouseTracking)
 		{
 			mouseArea->sendMouseDrag(x, y);
@@ -103,6 +104,7 @@ void Window::OnMouseMove(int x, int y)
 				if (!mouseArea->mouseEntered)
 				{
 					mouseArea->sendMouseEnter();
+					break;
 				}
 			}
 			else
@@ -110,6 +112,7 @@ void Window::OnMouseMove(int x, int y)
 				if (mouseArea->mouseEntered)
 				{
 					mouseArea->sendMouseLeave();
+					break;
 				}
 			}
 		}
@@ -118,13 +121,15 @@ void Window::OnMouseMove(int x, int y)
 
 void Window::OnPrimaryMouseButtonDown(int x, int y)
 {
-	for (MouseArea* mouseArea : mouseAreas)
+	for (auto it = mouseAreas.rbegin(); it != mouseAreas.rend(); ++it)
 	{
+		MouseArea* mouseArea = *it;
 		if (mouseArea->mouseTracking)
 		{
 			if (mouseArea->intersect(x, y))
 			{
 				mouseArea->sendPrimaryMouseButtonDown(x, y);
+				break;
 			}
 		}
 	}
@@ -133,13 +138,15 @@ void Window::OnPrimaryMouseButtonDown(int x, int y)
 
 void Window::OnPrimaryMouseButtonUp(int x, int y)
 {
-	for (MouseArea* mouseArea : mouseAreas)
+	for (auto it = mouseAreas.rbegin(); it != mouseAreas.rend(); ++it)
 	{
+		MouseArea* mouseArea = *it;
 		if (mouseArea->mouseTracking)
 		{
 			if (mouseArea->intersect(x, y))
 			{
 				mouseArea->sendPrimaryMouseButtonUp(x, y);
+				break;
 			}
 		}
 	}
@@ -148,6 +155,11 @@ void Window::OnPrimaryMouseButtonUp(int x, int y)
 
 void Window::OnSecondaryMouseButtonDown(int x, int y) { }  // overridable
 void Window::OnSecondaryMouseButtonUp(int x, int y) { }  // overridable
+
+void Window::OnKeyPress(WPARAM key)
+{
+	
+}
 
 void Window::OnResize()
 {
@@ -249,7 +261,9 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
     		return TRUE;
     	}
 
-	default:
-		return DefWindowProc(getHandle(), msg, wparam, lparam);
+    case WM_CHAR:
+    	OnKeyPress(wparam);
+    	break;
 	}
+	return DefWindowProc(getHandle(), msg, wparam, lparam);
 }

@@ -1,11 +1,10 @@
 #include "mousearea.h"
 #include "window.h"
-#include <algorithm>
 
 MouseArea::MouseArea(Control* parent, float x, float y, float width, float height)
 : Control(parent), cursorName(IDC_ARROW), mouseTracking(true), 
-  mouseEntered(false), dragging(false), mouseX(0.0), mouseY(0.0),
-  draggable(false), dragPoint(0, 0), minDragX(-FLT_MAX), minDragY(-FLT_MAX),
+  mouseEntered(false), dragging(false), mouseX(0), mouseY(0),
+  draggable(false), dragPoint(0.0f, 0.0f), minDragX(-FLT_MAX), minDragY(-FLT_MAX),
   maxDragX(FLT_MAX), maxDragY(FLT_MAX)
 {
 	this->x = x;
@@ -25,6 +24,8 @@ MouseArea::MouseArea(Control* parent, float x, float y, float width, float heigh
 			this->parent->setY(std::clamp(mouseY - dragPoint.y, minDragY, maxDragY));
 		}
 	});
+	z = zCounter;
+	zCounter++;
 }
 
 void MouseArea::sendMouseDrag(int x, int y)
