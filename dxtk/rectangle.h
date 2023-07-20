@@ -9,6 +9,8 @@ protected:
 	D2D1_ROUNDED_RECT rRect;
 	ID2D1SolidColorBrush* brush;
 public:
+	float radius;
+
 	Rect(Control* parent, float x, float y, float width, float height);
 	void setRadius(float radius);
 	void move(float x, float y) override;

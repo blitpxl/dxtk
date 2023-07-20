@@ -6,6 +6,7 @@
 #include <d2d1.h>
 #include <dwrite.h>
 #include <vector>
+#include <set>
 
 template <class T> void SafeRelease(T **ppT)
 {
@@ -16,28 +17,37 @@ template <class T> void SafeRelease(T **ppT)
     }
 }
 
+struct SetComparator {
+   	bool operator() (Control* a, Control* b) const {
+   	    return a->id < b->id;
+   	}
+};
+
 class Window : public BaseWindow<Window>, public Control
 {
 	friend Control;
-	
+	friend MouseArea;
+
+	bool customTitleBar;
 	HCURSOR cursorShape = LoadCursor(NULL, IDC_ARROW);
+	MouseArea* hoveredMouseArea;
 protected:
 	ID2D1Factory* factory;
 	IDWriteFactory* dwriteFactory;
 
-	std::vector<Control*> scene;
-	std::vector<MouseArea*> mouseAreas;
-	std::unordered_map<std::string, Control*> nameLookup;
+	std::set<Control*, SetComparator> scene;
+	std::set<MouseArea*, SetComparator> mouseAreas;
+	std::unordered_map<std::string_view, Control*> nameLookup;
 
 	virtual void Init() = 0;
-	virtual void CalculateLayout(float width, float height);
-	virtual void OnPaint();
-	virtual void OnMouseMove(int x, int y);
-	virtual void OnPrimaryMouseButtonDown(int x, int y);
-	virtual void OnPrimaryMouseButtonUp(int x, int y);
-	virtual void OnSecondaryMouseButtonDown(int x, int y);
-	virtual void OnSecondaryMouseButtonUp(int x, int y);
-	virtual void OnKeyPress(WPARAM key);
+	void CalculateLayout(float width, float height);
+	void OnPaint();
+	void OnMouseMove(int x, int y);
+	void OnPrimaryMouseButtonDown(int x, int y);
+	void OnPrimaryMouseButtonUp(int x, int y);
+	void OnSecondaryMouseButtonDown(int x, int y);
+	void OnSecondaryMouseButtonUp(int x, int y);
+	void OnKeyPress(WPARAM key);
 	HRESULT CreateGraphicsResources();
 	void DiscardGraphicsResources();
 	void OnResize();
@@ -52,6 +62,8 @@ public:
 	void setCursor(LPWSTR cursorName);
 	void push(Control* control);
 	void push(MouseArea* mouseArea);
+	void windowStartMove();
+	void setCustomTitleBar(bool enabled);
 	PCWSTR WindowClassName() const { return L"Window"; }
 	LRESULT HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam);
 };

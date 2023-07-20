@@ -1,9 +1,8 @@
 #include "rectangle.h"
-#include "shitlog.h"
 #include "window.h"
 
 Rect::Rect(Control* parent, float x, float y, float width, float height)
-: Control(parent), rounded(false)
+: Control(parent), rounded(false), radius(0.0f)
 {
 	is_drawable = true;
 	this->x = x;
@@ -24,9 +23,11 @@ void Rect::setRadius(float radius)
 	{
 		rounded = true;
 		rRect.radiusX = radius; rRect.radiusY = radius;
+		this->radius = radius;
 	}
 	else
 	{
+		radius = 0;
 		rounded = false;
 	}
 }

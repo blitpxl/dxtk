@@ -1,16 +1,16 @@
 #include "timer.h"
 
-Timer::Timer(int interval)
+Timer::Timer(float interval)
 : running(false)
 {
-	this->interval = interval;
+	this->interval = (int)interval*1000;
 }
 
 void Timer::timerThread()
 {
 	while (running)
 	{
-		std::this_thread::sleep_for (std::chrono::milliseconds(interval));
+		std::this_thread::sleep_for (std::chrono::microseconds(interval));
 		invokeSignal("timeout");
 	}
 }

@@ -28,6 +28,11 @@ MouseArea::MouseArea(Control* parent, float x, float y, float width, float heigh
 	zCounter++;
 }
 
+MouseArea::~MouseArea()
+{
+	resource.window->mouseAreas.erase(this);
+}
+
 void MouseArea::sendMouseDrag(int x, int y)
 {
 	if (dragging)
@@ -57,7 +62,7 @@ void MouseArea::sendPrimaryMouseButtonDown(int x, int y)
 	invokeSignal("primary_button_down");
 	dragging = true;
 	if (draggable)
-		dragPoint = mapToLocal(x, y);
+		dragPoint = mapToLocal((float)x, (float)y);
 }
 
 void MouseArea::sendPrimaryMouseButtonUp(int x, int y) { invokeSignal("primary_button_up"); dragging = false; }

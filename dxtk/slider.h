@@ -16,6 +16,8 @@ public:
 	MouseArea* mouseArea;
 
 	Slider(Control* parent, float x, float y, float width, float height);
+	~Slider();
+
 	void setRange(float minValue, float maxValue);
 	void setValue(float value);
 };

@@ -8,8 +8,10 @@ class Label : public Rect
 	IDWriteTextFormat* textFormat;
 public:
 	LPCWSTR text;
+	float scale;
 
 	Label(Control* parent, float x, float y, float width, float height);
+	void setScale(float scale);
 	void setText(std::string const& text);
 	void setTextAlignment(DWRITE_TEXT_ALIGNMENT alignment);
 	void setParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment);

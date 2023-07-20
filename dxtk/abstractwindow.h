@@ -80,6 +80,11 @@ public:
 		ShowWindow(getHandle(), SW_NORMAL);
 	}
 
+	void close()
+	{
+		DestroyWindow(getHandle());
+	}
+
 	void minimize()
 	{
 		ShowWindow(getHandle(), SW_MINIMIZE);

@@ -21,6 +21,7 @@ public:
 	int z;
 
 	MouseArea(Control* parent, float x, float y, float width, float height);
+	~MouseArea();
 
 	void sendMouseEnter();
 	void sendMouseLeave();

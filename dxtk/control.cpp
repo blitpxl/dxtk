@@ -1,9 +1,9 @@
 #include "control.h"
-#include "shitlog.h"
 #include "window.h"
 
 // this constructor should only be used by the window
 Control::Control()
+: name("unnamed")
 {
 	parent = NULL;
 	x = 0;
@@ -16,6 +16,7 @@ Control::Control()
 }
 
 Control::Control(Control* parent)
+: name("unnamed")
 {
 	x = 0;
 	y = 0;
@@ -28,11 +29,23 @@ Control::Control(Control* parent)
 	resource.window->push(this);
 
 	parent->registerSignal("dirty", [this](){ setDirty(); });
+	instanceCounter++;
+	id = instanceCounter;
 }
 
-void Control::setName(std::string const& name)
+Control::~Control()
+{
+	if (!is_window)
+		resource.window->scene.erase(this);
+	if (name != "unnamed")
+		resource.window->nameLookup.erase(name);
+	requestRedraw();
+}
+
+void Control::setName(std::string_view name)
 {
 	resource.window->nameLookup[name] = this;
+	this->name = name;
 }
 
 void Control::requestRedraw()

@@ -1,8 +1,8 @@
 #include "window.h"
-#include "shitlog.h"
 
 Window::Window()
-: Control(), factory(NULL), renderTarget(NULL), is_resizing(false)
+: Control(), factory(NULL), renderTarget(NULL), 
+is_resizing(false), hoveredMouseArea(nullptr), customTitleBar(false)
 {
 	is_window = true;
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
@@ -58,6 +58,7 @@ HRESULT Window::CreateGraphicsResources()
 void Window::DiscardGraphicsResources()
 {
 	SafeRelease(&renderTarget);
+	// TODO: Fix auto fallback
 }
 
 void Window::OnPaint()
@@ -76,7 +77,9 @@ void Window::OnPaint()
 		{
 			control->update();
 			if (control->is_drawable)
+			{
 				control->draw();
+			}
 		}
 
 		hr = renderTarget->EndDraw();
@@ -101,9 +104,16 @@ void Window::OnMouseMove(int x, int y)
 
 			if (mouseArea->intersect(x, y))
 			{
-				if (!mouseArea->mouseEntered)
+				if (hoveredMouseArea && mouseArea->z > hoveredMouseArea->z)
+				{
+					hoveredMouseArea->sendMouseLeave();
+					hoveredMouseArea = nullptr;
+				}
+
+				if (!mouseArea->mouseEntered && !hoveredMouseArea)
 				{
 					mouseArea->sendMouseEnter();
+					hoveredMouseArea = mouseArea;
 					break;
 				}
 			}
@@ -112,6 +122,8 @@ void Window::OnMouseMove(int x, int y)
 				if (mouseArea->mouseEntered)
 				{
 					mouseArea->sendMouseLeave();
+					if (mouseArea == hoveredMouseArea)
+						hoveredMouseArea = nullptr;
 					break;
 				}
 			}
@@ -180,12 +192,12 @@ void Window::OnResize()
 
 void Window::push(Control* control)
 {
-	scene.push_back(control);
+	scene.insert(control);
 }
 
 void Window::push(MouseArea* mouseArea)
 {
-	mouseAreas.push_back(mouseArea);
+	mouseAreas.insert(mouseArea);
 }
 
 void Window::redraw()
@@ -196,6 +208,19 @@ void Window::redraw()
 void Window::setCursor(LPWSTR cursorName)
 {
 	cursorShape = LoadCursor(NULL, cursorName);
+}
+
+void Window::windowStartMove()
+{
+	// using undocumented WM_SYSCOMMAND parameter from
+	// https://stackoverflow.com/a/763273/21564282
+	SendMessage(getHandle(), WM_SYSCOMMAND, SC_SIZE|0x9 , 0);
+}
+
+void Window::setCustomTitleBar(bool enabled)
+{
+	customTitleBar = enabled;
+	SetWindowPos(getHandle(), nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
 }
 
 LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
@@ -234,6 +259,21 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 		OnResize();
 		return 0;
 
+	case WM_NCCALCSIZE:
+		{
+			bool recalculate = static_cast<bool>(wparam);
+            if (recalculate && customTitleBar)
+            {
+            	NCCALCSIZE_PARAMS* parameters = reinterpret_cast<NCCALCSIZE_PARAMS*>(lparam);
+            	RECT& client_area = parameters->rgrc[0];
+            	client_area.right -= GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+            	client_area.left += GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+            	client_area.bottom -= GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+            	return 0;
+			}
+			break;
+		}
+
 	case WM_MOUSEMOVE:
 		OnMouseMove(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
 		return 0;
@@ -265,5 +305,6 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
     	OnKeyPress(wparam);
     	break;
 	}
+
 	return DefWindowProc(getHandle(), msg, wparam, lparam);
 }

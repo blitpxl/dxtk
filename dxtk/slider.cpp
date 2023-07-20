@@ -34,6 +34,13 @@ Slider::Slider(Control* parent, float x, float y, float width, float height)
 	});
 }
 
+Slider::~Slider()
+{
+	delete handle;
+	delete valueBar;
+	delete mouseArea;
+}
+
 void Slider::setRange(float minValue, float maxValue)
 {
 	this->minValue = minValue;

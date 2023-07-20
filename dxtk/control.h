@@ -3,10 +3,9 @@
 #include <unordered_map>
 #include <d2d1.h>
 #include <dwrite.h>
-#include <string>
+#include <string_view>
 
 #include "dxobject.h"
-#include "shitlog.h"
 #include "d2dalias.h"
 
 // declaration for SharedResource
@@ -54,8 +53,11 @@ class Control : public DxObject
 protected:
 	TargetAnchors targetAnchors;
 	std::wstring strbuf;
+	std::string name;
 public:
+	static inline unsigned int instanceCounter = 0;
 	static inline SharedResource resource;
+	unsigned int id;
 	float x;
 	float y;
 	float localX;
@@ -72,8 +74,9 @@ public:
 
 	Control();
 	Control(Control* parent);
+	~Control();
 
-	void setName(std::string const& name);
+	void setName(std::string_view name);
 	void setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor = AnchorType::none);
 	void setAnchorPadding(float padding);
 	void requestRedraw();

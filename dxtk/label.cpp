@@ -1,7 +1,7 @@
 #include "label.h"
 
 Label::Label(Control* parent, float x, float y, float width, float height)
-: Rect(parent, x, y, width, height)
+: Rect(parent, x, y, width, height), scale(1.0f)
 {
 	resource.dwriteFactory->CreateTextFormat(
     	L"Consolas",
@@ -18,6 +18,12 @@ Label::Label(Control* parent, float x, float y, float width, float height)
     paragraphAlignment = ParagraphAlignCenter;
     textAlignment = TextAlignCenter;
     text = L"";
+}
+
+void Label::setScale(float scale)
+{
+	this->scale = scale;
+	requestRedraw();
 }
 
 void Label::setText(std::string const& text)
@@ -57,16 +63,19 @@ void Label::setTextFormat(std::string const& fontFamily, float fontSize, DWRITE_
 void Label::update()
 {
 	Control::update();
-	resource.renderTarget->SetTransform(D2D1::Matrix3x2F::Translation(x, y));
+	D2D1::Matrix3x2F transformScale = D2D1::Matrix3x2F::Scale(D2D1::Size(scale, scale), D2D1::Point2F(width/2, height/2));
+	D2D1::Matrix3x2F transformTrans = D2D1::Matrix3x2F::Translation(x, y);
+	resource.renderTarget->SetTransform(transformScale * transformTrans);
 }
 
 void Label::draw()
 {
 	resource.renderTarget->DrawText(
 		text,
-		wcslen(text),
+		(UINT32)wcslen(text),
 		textFormat,
 		rect,
-		brush
+		brush,
+		D2D1_DRAW_TEXT_OPTIONS_NO_SNAP 
 	);
 }
