@@ -77,6 +77,7 @@ public:
 	Control(Control* parent);
 	~Control();
 
+	void setVisible(bool visible);
 	void setName(std::string_view name);
 	void setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor = AnchorType::none);
 	void setAnchorPadding(float padding);

@@ -6,12 +6,10 @@
 
 class TextField : public Rect
 {
-	bool is_caret_visible;
 	unsigned int caret_position;
-
 	Timer* caretTimer;
-	std::string buffer;
 public:
+	std::string value;
 	Label* text;
 	InputArea* inputArea;
 	Rect* caret;

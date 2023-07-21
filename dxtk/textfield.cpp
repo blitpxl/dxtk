@@ -1,7 +1,7 @@
 #include "textfield.h"
 
 TextField::TextField(Control* parent, float x, float y, float width, float height)
-: Rect(parent, x, y, width, height), is_caret_visible(false), caret_position(0)
+: Rect(parent, x, y, width, height), caret_position(0)
 {
 	setColor(Color(0.0f, 0.0f, 0.0f, 0.2f));
 
@@ -21,7 +21,8 @@ TextField::TextField(Control* parent, float x, float y, float width, float heigh
 	caret = new Rect(text, 0, 0, 2, 0);
 	caret->setAnchor(AnchorType::top, AnchorType::top);
 	caret->setAnchor(AnchorType::bottom, AnchorType::bottom);
-	caret->setColor(Color(1.0f, 0.5f, 0.2f, 0.0f));
+	caret->setColor(Color(1.0f, 0.5f, 0.2f));
+	caret->is_drawable = false;
 
 	caretTimer = new Timer(500);
 	caretTimer->registerSignal("timeout", std::bind(&TextField::_caretBlink, this));
@@ -29,12 +30,14 @@ TextField::TextField(Control* parent, float x, float y, float width, float heigh
 
 void TextField::_onCharPressed()
 {
+	caret->setVisible(true);
+	caretTimer->reset();
 	if (inputArea->pressedChar == VK_BACK)
 	{
-		if (buffer.length() > 0 && caret_position > 0)
+		if (value.length() > 0 && caret_position > 0)
 		{
-			buffer.erase(caret_position-1, 1);
-			text->setText(buffer);
+			value.erase(caret_position-1, 1);
+			text->setText(value);
 			caret_position--;
 			caret->setX(text->getFontMetrics(caret_position).left);
 		}
@@ -46,45 +49,62 @@ void TextField::_onCharPressed()
 		#pragma warning(suppress : 4244) // suppress utf-16 to utf-8 warning
 		std::string character = std::string(wstr.begin(), wstr.end());
 	
-		buffer.insert(caret_position, character);
-		text->setText(buffer);
+		value.insert(caret_position, character);
+		text->setText(value);
 		caret_position++;
 	
 		caret->setX(text->getFontMetrics(caret_position).left);
 	}
+	invokeSignal("text_changed");
 }
 
 void TextField::_onKeyPressed()
 {
-	if (inputArea->pressedKey == VK_RIGHT)
+	caret->setVisible(true);
+	caretTimer->reset();
+
+	switch (inputArea->pressedKey)
 	{
-		if (caret_position < buffer.length())
+	case VK_RIGHT:
+		if (caret_position < value.length())
 		{
 			caret_position++;
 			caret->setX(text->getFontMetrics(caret_position).left);
 		}
-	}
-	else if (inputArea->pressedKey == VK_LEFT)
-	{
+		break;
+
+	case VK_LEFT:
 		if (caret_position > 0)
 		{
 			caret_position--;
 			caret->setX(text->getFontMetrics(caret_position).left);
 		}
+		break;
+
+	case VK_HOME:
+		caret_position = 0;
+		caret->setX(text->getFontMetrics(caret_position).left);
+		break;
+
+	case VK_END:
+		if (value.length() > 0)
+		{
+			caret_position = (unsigned int)value.length();
+			caret->setX(text->getFontMetrics(caret_position).left);
+		}
+		break;
 	}
 }
 
 void TextField::_caretBlink()
 {
-	if (is_caret_visible)
+	if (caret->is_drawable)
 	{
-		caret->setColor(Color(caret->color.r, caret->color.g, caret->color.b, 0.0f));
-		is_caret_visible = false;
+		caret->setVisible(false);
 	}
 	else
 	{
-		caret->setColor(Color(caret->color.r, caret->color.g, caret->color.b, 0.8f));
-		is_caret_visible = true;
+		caret->setVisible(true);
 	}
 }
 
@@ -93,13 +113,11 @@ void TextField::_onFocusChanged()
 	if (inputArea->hasFocus)
 	{
 		caretTimer->start();
-		caret->setColor(Color(caret->color.r, caret->color.g, caret->color.b, 0.8f));
-		is_caret_visible = true;
+		caret->setVisible(true);
 	}
 	else
 	{
 		caretTimer->stop();
-		caret->setColor(Color(caret->color.r, caret->color.g, caret->color.b, 0.0f));
-		is_caret_visible = false;
+		caret->setVisible(false);
 	}
 }

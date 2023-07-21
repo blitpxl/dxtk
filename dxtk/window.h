@@ -31,6 +31,7 @@ class Window : public BaseWindow<Window>, public Control
 	bool customTitleBar;
 	HCURSOR cursorShape = LoadCursor(NULL, IDC_ARROW);
 	InputArea* hoveredInputArea;
+	InputArea* focusedInputArea;
 protected:
 	ID2D1Factory* factory;
 	IDWriteFactory* dwriteFactory;

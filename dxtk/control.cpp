@@ -42,6 +42,12 @@ Control::~Control()
 	requestRedraw();
 }
 
+void Control::setVisible(bool visible)
+{
+	is_drawable = visible;
+	requestRedraw();
+}
+
 void Control::setName(std::string_view name)
 {
 	resource.window->nameLookup[name] = this;

@@ -2,7 +2,7 @@
 
 Window::Window()
 : Control(), factory(NULL), renderTarget(NULL), 
-is_resizing(false), hoveredInputArea(nullptr), customTitleBar(false)
+is_resizing(false), hoveredInputArea(nullptr), focusedInputArea(nullptr),customTitleBar(false)
 {
 	is_window = true;
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
@@ -70,7 +70,6 @@ void Window::OnPaint()
 		BeginPaint(getHandle(), &ps);
 
 		renderTarget->BeginDraw();
-
 		renderTarget->Clear(backgroundColor);
 
 		for (Control* control : scene)
@@ -141,14 +140,20 @@ void Window::OnPrimaryMouseButtonDown(int x, int y)
 			if (inputArea->intersect(x, y))
 			{
 				inputArea->sendPrimaryMouseButtonDown(x, y);
-				if (!inputArea->hasFocus)
+				if (!focusedInputArea)
+				{
 					inputArea->sendFocusGained();
+					focusedInputArea = inputArea;
+				}
 				break;
 			}
 			else
 			{
-				if (inputArea->hasFocus)
-					inputArea->sendFocusLost();
+				if (focusedInputArea)
+				{
+					focusedInputArea->sendFocusLost();
+					focusedInputArea = nullptr;
+				}
 			}
 		}
 	}

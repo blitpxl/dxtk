@@ -116,7 +116,6 @@ public:
 };
 
 ...
-}
 ```
 
 # The State
@@ -129,16 +128,14 @@ The current state of the project is still in a phase that I call "Good enough fo
 - [x] Button
 - [x] Horizontal Slider
 - [ ] Vertical Slider
-- [ ] Text Input
+- [x] Text Input (done but still need improvements)
 - [ ] CheckBox
 - [ ] ComboBox
 - [ ] Radio Button
-- [ ] 
-- [x] Row (need improvements)
-- [x] Column (need improvements)
+- [x] Row (still buggy)
+- [x] Column (still buggy)
 - [x] Rectangle
 - [x] Rounded Rectangle
-- [ ] Ellipse
-- [x] Timer (need improvements)
-- [x] Mouse Area
+- [x] Timer
+- [x] InputArea
 - [ ] ScrollView/Bar

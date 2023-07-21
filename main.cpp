@@ -10,18 +10,16 @@ public:
 	{
 		backgroundColor = Color(0.2f, 0.25f, 0.3f);
 
-		InputArea* inputArea = new InputArea(this, 0, 0, 0, 30);
-		inputArea->setAnchor(AnchorType::left, AnchorType::left);
-		inputArea->setAnchor(AnchorType::right, AnchorType::right);
-		inputArea->registerSignal("primary_button_down", [this](){
-			windowStartMove();
-		});
-
-		TextField* textField = new TextField(this, 0, 0, 300, 30);
-		textField->setAnchor(AnchorType::top, AnchorType::top);
+		TextField* textField = new TextField(this, 0, 100, 300, 30);
+		textField->text->setTextFormat("Open Sans");
 		textField->setAnchor(AnchorType::horizontalCenter, AnchorType::horizontalCenter);
-		textField->setAnchorPadding(4);
 		textField->setRadius(4);
+
+		TextField* textField1 = new TextField(this, 0, 150, 300, 30);
+		textField1->setAnchor(AnchorType::horizontalCenter, AnchorType::horizontalCenter);
+
+		Button* button = new Button(this, 0, 0, 100, 30);
+		Button* button1 = new Button(this, 15, 15, 100, 30);
 	}
 };
 
@@ -29,7 +27,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 {
 	MyWindow window;
 	window.create(L"DXTK Demo", -1, -1, 900, 600);
-	window.setCustomTitleBar(true);
 	window.setDark();
 	window.show();
 	window.init();
