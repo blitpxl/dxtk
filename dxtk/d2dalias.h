@@ -38,3 +38,6 @@
 #define FontStyleNormal 		DWRITE_FONT_STYLE_NORMAL
 #define FontStyleOblique 		DWRITE_FONT_STYLE_OBLIQUE
 #define FontStyleItalic 		DWRITE_FONT_STYLE_ITALIC
+
+// Font Metrics struct
+#define FontMetrics				DWRITE_HIT_TEST_METRICS 

@@ -1,12 +1,12 @@
 #include "label.h"
 
 Label::Label(Control* parent, float x, float y, float width, float height)
-: Rect(parent, x, y, width, height), scale(1.0f)
+: Rect(parent, x, y, width, height), scale(1.0f), textLayout(NULL)
 {
 	resource.dwriteFactory->CreateTextFormat(
     	L"Consolas",
     	NULL,
-    	DWRITE_FONT_WEIGHT_BOLD,
+    	DWRITE_FONT_WEIGHT_NORMAL,
     	DWRITE_FONT_STYLE_NORMAL,
     	DWRITE_FONT_STRETCH_NORMAL,
     	14.0f,
@@ -46,6 +46,12 @@ void Label::setParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment)
 
 void Label::setTextFormat(std::string const& fontFamily, float fontSize, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle)
 {
+	if (textFormat)
+	{
+		textFormat->Release();
+		textFormat = NULL;
+	}
+
 	resource.dwriteFactory->CreateTextFormat(
 		toWString(fontFamily),
 		NULL,
@@ -58,6 +64,38 @@ void Label::setTextFormat(std::string const& fontFamily, float fontSize, DWRITE_
 	);
 	textFormat->SetTextAlignment(textAlignment);
     textFormat->SetParagraphAlignment(paragraphAlignment);
+}
+
+FontMetrics Label::getFontMetrics(UINT32 textPosition)
+{
+	if (textLayout)
+	{
+		textLayout->Release();
+		textLayout = NULL;
+	}
+
+	resource.dwriteFactory->CreateTextLayout(
+		text,
+		(UINT32)wcslen(text),
+		textFormat,
+		width,
+		height,
+		&textLayout
+	);
+
+	float pointX;
+	float pointY;
+	FontMetrics metrics;
+
+	textLayout->HitTestTextPosition(
+		textPosition,
+		FALSE,
+		&pointX,
+		&pointY,
+		&metrics
+	);
+
+	return metrics;
 }
 
 void Label::update()
@@ -75,7 +113,6 @@ void Label::draw()
 		(UINT32)wcslen(text),
 		textFormat,
 		rect,
-		brush,
-		D2D1_DRAW_TEXT_OPTIONS_NO_SNAP 
+		brush
 	);
 }

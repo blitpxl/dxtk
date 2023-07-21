@@ -190,7 +190,7 @@ void Control::update()
 			{
 				if (targetAnchors.top != AnchorType::none)
 				{
-					height = parent->height;
+					height = parent->height - (anchorPadding * 2);
 				}
 				else
 				{

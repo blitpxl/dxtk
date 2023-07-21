@@ -15,17 +15,17 @@ Slider::Slider(Control* parent, float x, float y, float width, float height)
 	handle->setColor(Color(1.0f, 0.5f, 0.2f));
 	handle->setAnchor(AnchorType::verticalCenter, AnchorType::verticalCenter);
 
-	mouseArea = new MouseArea(handle, 0, 0, 0, 0);
-	mouseArea->setAnchor(AnchorType::fill);
-	mouseArea->setDraggable(true);
+	inputArea = new InputArea(handle, 0, 0, 0, 0);
+	inputArea->setAnchor(AnchorType::fill);
+	inputArea->setDraggable(true);
 
-	mouseArea->registerSignal("mouse_drag", [this](){
+	inputArea->registerSignal("mouse_drag", [this](){
 		this->handlePos = mapRange(this->handle->localX, 0, this->width - this->handle->width, 0.0, 1.0);
 		this->value = mapRange(this->handlePos, 0.0, 1.0, minValue, maxValue);
 		this->invokeSignal("value_changed");
 	});
 	registerSignal("resize", [this](){
-		mouseArea->setDragLimitX(0, this->width - this->handle->width);
+		inputArea->setDragLimitX(0, this->width - this->handle->width);
 		this->handle->setX(mapRange(this->handlePos, 0.0, 1.0, 0.0, this->width - this->handle->width));
 		this->valueBar->setWidth(this->handle->localX);
 	});
@@ -38,7 +38,7 @@ Slider::~Slider()
 {
 	delete handle;
 	delete valueBar;
-	delete mouseArea;
+	delete inputArea;
 }
 
 void Slider::setRange(float minValue, float maxValue)

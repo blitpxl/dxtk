@@ -11,7 +11,8 @@ void Timer::timerThread()
 	while (running)
 	{
 		std::this_thread::sleep_for (std::chrono::microseconds(interval));
-		invokeSignal("timeout");
+		if (running)
+			invokeSignal("timeout");
 	}
 }
 

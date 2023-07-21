@@ -1,8 +1,8 @@
-#include "mousearea.h"
+#include "inputarea.h"
 #include "window.h"
 
-MouseArea::MouseArea(Control* parent, float x, float y, float width, float height)
-: Control(parent), cursorName(IDC_ARROW), mouseTracking(true), 
+InputArea::InputArea(Control* parent, float x, float y, float width, float height)
+: Control(parent), cursorName(IDC_ARROW), hasFocus(false), keyboardTracking(false), mouseTracking(true), 
   mouseEntered(false), dragging(false), mouseX(0), mouseY(0),
   draggable(false), dragPoint(0.0f, 0.0f), minDragX(-FLT_MAX), minDragY(-FLT_MAX),
   maxDragX(FLT_MAX), maxDragY(FLT_MAX)
@@ -28,12 +28,12 @@ MouseArea::MouseArea(Control* parent, float x, float y, float width, float heigh
 	zCounter++;
 }
 
-MouseArea::~MouseArea()
+InputArea::~InputArea()
 {
-	resource.window->mouseAreas.erase(this);
+	resource.window->inputAreas.erase(this);
 }
 
-void MouseArea::sendMouseDrag(int x, int y)
+void InputArea::sendMouseDrag(int x, int y)
 {
 	if (dragging)
 	{
@@ -43,19 +43,31 @@ void MouseArea::sendMouseDrag(int x, int y)
 	}
 }
 
-void MouseArea::sendMouseEnter()
+void InputArea::sendFocusGained()
+{
+	hasFocus = true;
+	invokeSignal("focus_changed");
+}
+
+void InputArea::sendFocusLost()
+{
+	hasFocus = false;
+	invokeSignal("focus_changed");
+}
+
+void InputArea::sendMouseEnter()
 {
 	mouseEntered = true;
 	invokeSignal("mouse_enter");
 }
 
-void MouseArea::sendMouseLeave()
+void InputArea::sendMouseLeave()
 {
 	mouseEntered = false;
 	invokeSignal("mouse_leave");
 }
 
-void MouseArea::sendPrimaryMouseButtonDown(int x, int y)
+void InputArea::sendPrimaryMouseButtonDown(int x, int y)
 {
 	mouseX = x;
 	mouseY = y;
@@ -65,32 +77,44 @@ void MouseArea::sendPrimaryMouseButtonDown(int x, int y)
 		dragPoint = mapToLocal((float)x, (float)y);
 }
 
-void MouseArea::sendPrimaryMouseButtonUp(int x, int y) { invokeSignal("primary_button_up"); dragging = false; }
-void MouseArea::sendSecondayMouseButtonDown(int x, int y) { invokeSignal("secondary_button_down"); }
-void MouseArea::sendSecondaryMouseButtonUp(int x, int y) { invokeSignal("secondary_button_up"); }
+void InputArea::sendPrimaryMouseButtonUp(int x, int y) { invokeSignal("primary_button_up"); dragging = false; }
+void InputArea::sendSecondayMouseButtonDown(int x, int y) { invokeSignal("secondary_button_down"); }
+void InputArea::sendSecondaryMouseButtonUp(int x, int y) { invokeSignal("secondary_button_up"); }
 
-bool MouseArea::intersect(int x, int y)
+void InputArea::sendCharPress(wchar_t character)
+{
+	pressedChar = character;
+	invokeSignal("char_pressed");
+}
+
+void InputArea::sendKeyPress(WPARAM key)
+{
+	pressedKey = key;
+	invokeSignal("key_pressed");
+}
+
+bool InputArea::intersect(int x, int y)
 {
 	return (x > this->x && x < (this->x + width)) && (y > this->y && y < (this->y + height));
 }
 
-void MouseArea::setCursor(LPWSTR cursorName)
+void InputArea::setCursor(LPWSTR cursorName)
 {
 	this->cursorName = cursorName;
 }
 
-void MouseArea::setDraggable(bool draggable)
+void InputArea::setDraggable(bool draggable)
 {
 	this->draggable = draggable;
 }
 
-void MouseArea::setDragLimitX(float minValue, float maxValue)
+void InputArea::setDragLimitX(float minValue, float maxValue)
 {
 	minDragX = minValue;
 	maxDragX = maxValue;
 }
 
-void MouseArea::setDragLimitY(float minValue, float maxValue)
+void InputArea::setDragLimitY(float minValue, float maxValue)
 {
 	minDragY = minValue;
 	maxDragY = maxValue;

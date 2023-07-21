@@ -1,7 +1,7 @@
 #pragma once
 #include "rectangle.h"
 #include "label.h"
-#include "mousearea.h"
+#include "inputarea.h"
 
 struct StateColor
 {
@@ -13,7 +13,7 @@ struct StateColor
 class Button : public Rect
 {
 public:
-	MouseArea* mouseArea;
+	InputArea* inputArea;
 	Label* label;
 	StateColor stateColor;
 

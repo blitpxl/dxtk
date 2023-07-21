@@ -7,6 +7,7 @@
 
 #include "dxobject.h"
 #include "d2dalias.h"
+#include "logging.h"
 
 // declaration for SharedResource
 class Window;

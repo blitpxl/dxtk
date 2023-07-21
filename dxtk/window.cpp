@@ -2,7 +2,7 @@
 
 Window::Window()
 : Control(), factory(NULL), renderTarget(NULL), 
-is_resizing(false), hoveredMouseArea(nullptr), customTitleBar(false)
+is_resizing(false), hoveredInputArea(nullptr), customTitleBar(false)
 {
 	is_window = true;
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
@@ -95,35 +95,35 @@ void Window::OnPaint()
 
 void Window::OnMouseMove(int x, int y)
 {
-	for (auto it = mouseAreas.rbegin(); it != mouseAreas.rend(); ++it)
+	for (auto it = inputAreas.rbegin(); it != inputAreas.rend(); ++it)
 	{
-		MouseArea* mouseArea = *it;
-		if (mouseArea->mouseTracking)
+		InputArea* inputArea = *it;
+		if (inputArea->mouseTracking)
 		{
-			mouseArea->sendMouseDrag(x, y);
+			inputArea->sendMouseDrag(x, y);
 
-			if (mouseArea->intersect(x, y))
+			if (inputArea->intersect(x, y))
 			{
-				if (hoveredMouseArea && mouseArea->z > hoveredMouseArea->z)
+				if (hoveredInputArea && inputArea->z > hoveredInputArea->z)
 				{
-					hoveredMouseArea->sendMouseLeave();
-					hoveredMouseArea = nullptr;
+					hoveredInputArea->sendMouseLeave();
+					hoveredInputArea = nullptr;
 				}
 
-				if (!mouseArea->mouseEntered && !hoveredMouseArea)
+				if (!inputArea->mouseEntered && !hoveredInputArea)
 				{
-					mouseArea->sendMouseEnter();
-					hoveredMouseArea = mouseArea;
+					inputArea->sendMouseEnter();
+					hoveredInputArea = inputArea;
 					break;
 				}
 			}
 			else
 			{
-				if (mouseArea->mouseEntered)
+				if (inputArea->mouseEntered)
 				{
-					mouseArea->sendMouseLeave();
-					if (mouseArea == hoveredMouseArea)
-						hoveredMouseArea = nullptr;
+					inputArea->sendMouseLeave();
+					if (inputArea == hoveredInputArea)
+						hoveredInputArea = nullptr;
 					break;
 				}
 			}
@@ -133,15 +133,22 @@ void Window::OnMouseMove(int x, int y)
 
 void Window::OnPrimaryMouseButtonDown(int x, int y)
 {
-	for (auto it = mouseAreas.rbegin(); it != mouseAreas.rend(); ++it)
+	for (auto it = inputAreas.rbegin(); it != inputAreas.rend(); ++it)
 	{
-		MouseArea* mouseArea = *it;
-		if (mouseArea->mouseTracking)
+		InputArea* inputArea = *it;
+		if (inputArea->mouseTracking)
 		{
-			if (mouseArea->intersect(x, y))
+			if (inputArea->intersect(x, y))
 			{
-				mouseArea->sendPrimaryMouseButtonDown(x, y);
+				inputArea->sendPrimaryMouseButtonDown(x, y);
+				if (!inputArea->hasFocus)
+					inputArea->sendFocusGained();
 				break;
+			}
+			else
+			{
+				if (inputArea->hasFocus)
+					inputArea->sendFocusLost();
 			}
 		}
 	}
@@ -150,14 +157,14 @@ void Window::OnPrimaryMouseButtonDown(int x, int y)
 
 void Window::OnPrimaryMouseButtonUp(int x, int y)
 {
-	for (auto it = mouseAreas.rbegin(); it != mouseAreas.rend(); ++it)
+	for (auto it = inputAreas.rbegin(); it != inputAreas.rend(); ++it)
 	{
-		MouseArea* mouseArea = *it;
-		if (mouseArea->mouseTracking)
+		InputArea* inputArea = *it;
+		if (inputArea->mouseTracking)
 		{
-			if (mouseArea->intersect(x, y))
+			if (inputArea->intersect(x, y))
 			{
-				mouseArea->sendPrimaryMouseButtonUp(x, y);
+				inputArea->sendPrimaryMouseButtonUp(x, y);
 				break;
 			}
 		}
@@ -168,9 +175,26 @@ void Window::OnPrimaryMouseButtonUp(int x, int y)
 void Window::OnSecondaryMouseButtonDown(int x, int y) { }  // overridable
 void Window::OnSecondaryMouseButtonUp(int x, int y) { }  // overridable
 
+void Window::OnCharPress(WPARAM character)
+{
+	for (InputArea* inputArea : inputAreas)
+	{
+		if (inputArea->keyboardTracking && inputArea->hasFocus)
+		{
+			inputArea->sendCharPress((wchar_t)character);
+		}
+	}
+}
+
 void Window::OnKeyPress(WPARAM key)
 {
-	
+	for (InputArea* inputArea : inputAreas)
+	{
+		if (inputArea->keyboardTracking && inputArea->hasFocus)
+		{
+			inputArea->sendKeyPress(key);
+		}
+	}
 }
 
 void Window::OnResize()
@@ -195,9 +219,9 @@ void Window::push(Control* control)
 	scene.insert(control);
 }
 
-void Window::push(MouseArea* mouseArea)
+void Window::push(InputArea* inputArea)
 {
-	mouseAreas.insert(mouseArea);
+	inputAreas.insert(inputArea);
 }
 
 void Window::redraw()
@@ -300,8 +324,13 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
     		SetCursor(cursorShape);
     		return TRUE;
     	}
+    	break;
 
     case WM_CHAR:
+    	OnCharPress(wparam);
+    	break;
+
+    case WM_KEYDOWN:
     	OnKeyPress(wparam);
     	break;
 	}

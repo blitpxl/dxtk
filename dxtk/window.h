@@ -1,7 +1,7 @@
 #pragma once
 #include "abstractwindow.h"
 #include "control.h"
-#include "mousearea.h"
+#include "inputarea.h"
 #include <windowsx.h>
 #include <d2d1.h>
 #include <dwrite.h>
@@ -26,17 +26,17 @@ struct SetComparator {
 class Window : public BaseWindow<Window>, public Control
 {
 	friend Control;
-	friend MouseArea;
+	friend InputArea;
 
 	bool customTitleBar;
 	HCURSOR cursorShape = LoadCursor(NULL, IDC_ARROW);
-	MouseArea* hoveredMouseArea;
+	InputArea* hoveredInputArea;
 protected:
 	ID2D1Factory* factory;
 	IDWriteFactory* dwriteFactory;
 
 	std::set<Control*, SetComparator> scene;
-	std::set<MouseArea*, SetComparator> mouseAreas;
+	std::set<InputArea*, SetComparator> inputAreas;
 	std::unordered_map<std::string_view, Control*> nameLookup;
 
 	virtual void Init() = 0;
@@ -47,6 +47,7 @@ protected:
 	void OnPrimaryMouseButtonUp(int x, int y);
 	void OnSecondaryMouseButtonDown(int x, int y);
 	void OnSecondaryMouseButtonUp(int x, int y);
+	void OnCharPress(WPARAM character);
 	void OnKeyPress(WPARAM key);
 	HRESULT CreateGraphicsResources();
 	void DiscardGraphicsResources();
@@ -61,7 +62,7 @@ public:
 	void redraw();
 	void setCursor(LPWSTR cursorName);
 	void push(Control* control);
-	void push(MouseArea* mouseArea);
+	void push(InputArea* inputArea);
 	void windowStartMove();
 	void setCustomTitleBar(bool enabled);
 	PCWSTR WindowClassName() const { return L"Window"; }

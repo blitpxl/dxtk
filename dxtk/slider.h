@@ -1,6 +1,6 @@
 #pragma once
 #include "rectangle.h"
-#include "mousearea.h"
+#include "inputarea.h"
 #include "mathutils.h"
 
 class Slider : public Rect
@@ -13,7 +13,7 @@ public:
 
 	Rect* handle;
 	Rect* valueBar;
-	MouseArea* mouseArea;
+	InputArea* inputArea;
 
 	Slider(Control* parent, float x, float y, float width, float height);
 	~Slider();

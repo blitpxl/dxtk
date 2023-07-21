@@ -10,12 +10,12 @@ Button::Button(Control* parent, float x, float y, float width, float height)
 
 	brush->SetColor(stateColor.normal);
 
-	mouseArea = new MouseArea(this, 0, 0, 0, 0);
-	mouseArea->setAnchor(AnchorType::fill);
-	mouseArea->registerSignal("mouse_enter", [this](){ setColor(stateColor.hover); });
-	mouseArea->registerSignal("mouse_leave", [this](){ setColor(stateColor.normal); this->isPressed = false; });
-	mouseArea->registerSignal("primary_button_down", [this](){ setColor(stateColor.pressed); invokeSignal("pressed"); });
-	mouseArea->registerSignal("primary_button_up", [this](){ setColor(stateColor.hover); invokeSignal("released"); });
+	inputArea = new InputArea(this, 0, 0, 0, 0);
+	inputArea->setAnchor(AnchorType::fill);
+	inputArea->registerSignal("mouse_enter", [this](){ setColor(stateColor.hover); });
+	inputArea->registerSignal("mouse_leave", [this](){ setColor(stateColor.normal); this->isPressed = false; });
+	inputArea->registerSignal("primary_button_down", [this](){ setColor(stateColor.pressed); invokeSignal("pressed"); });
+	inputArea->registerSignal("primary_button_up", [this](){ setColor(stateColor.hover); invokeSignal("released"); });
 
 	registerSignal("pressed", [this](){ isPressed = true; });
 	registerSignal("released", [this](){
@@ -30,7 +30,7 @@ Button::Button(Control* parent, float x, float y, float width, float height)
 
 Button::~Button()
 {
-	delete mouseArea;
+	delete inputArea;
 	delete label;
 }
 

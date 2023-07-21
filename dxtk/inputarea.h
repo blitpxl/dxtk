@@ -1,8 +1,9 @@
 #pragma once
 #include "control.h"
+#include "logging.h"
 #include <algorithm>
 
-class MouseArea : public Control
+class InputArea : public Control
 {
 	static inline int zCounter;
 	LPWSTR cursorName;
@@ -10,19 +11,26 @@ class MouseArea : public Control
 	bool draggable;
 	Point dragPoint;
 public:
+	bool hasFocus;
+	bool keyboardTracking;
 	bool mouseTracking;
 	bool mouseEntered;
-	int mouseX;
-	int mouseY;
 	float minDragX;
 	float minDragY;
 	float maxDragX;
 	float maxDragY;
 	int z;
 
-	MouseArea(Control* parent, float x, float y, float width, float height);
-	~MouseArea();
+	int mouseX;
+	int mouseY;
+	wchar_t pressedChar;
+	WPARAM pressedKey;
 
+	InputArea(Control* parent, float x, float y, float width, float height);
+	~InputArea();
+
+	void sendFocusGained();
+	void sendFocusLost();
 	void sendMouseEnter();
 	void sendMouseLeave();
 	void sendMouseDrag(int x, int y);
@@ -30,6 +38,9 @@ public:
 	void sendPrimaryMouseButtonUp(int x, int y);
 	void sendSecondayMouseButtonDown(int x, int y);
 	void sendSecondaryMouseButtonUp(int x, int y);
+	void sendCharPress(wchar_t character);
+	void sendKeyPress(WPARAM key);
+
 	bool intersect(int x, int y);
 	void setCursor(LPWSTR cursorName);
 	void setDraggable(bool draggable);

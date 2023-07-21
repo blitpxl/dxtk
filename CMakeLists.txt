@@ -4,7 +4,7 @@ project(demo)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 #set(CMAKE_CXX_FLAGS_DEBUG "")
-add_compile_options("/std:c++20" "/Od" "/Zi" "/DEBUG" "/EHsc" 
+add_compile_options("/std:c++20" "/Od" "/Zi" "/DEBUG" "/EHsc" "/DUNICODE" "/D_UNICODE"
 	#"/fsanitize=address"
 )
 
@@ -15,10 +15,11 @@ add_library(dxtk STATIC
 	dxtk/dxobject.cpp
 	dxtk/label.cpp
 	dxtk/mathutils.cpp
-	dxtk/mousearea.cpp
+	dxtk/inputarea.cpp
 	dxtk/rectangle.cpp
 	dxtk/row.cpp
 	dxtk/slider.cpp
+	dxtk/textfield.cpp
 	dxtk/timer.cpp
 	dxtk/window.cpp
 )

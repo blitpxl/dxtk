@@ -2,7 +2,7 @@
 #include "window.h"
 
 Rect::Rect(Control* parent, float x, float y, float width, float height)
-: Control(parent), rounded(false), radius(0.0f)
+: Control(parent), rounded(false), radius(0.0f), color(Color(Color::White))
 {
 	is_drawable = true;
 	this->x = x;
@@ -14,7 +14,7 @@ Rect::Rect(Control* parent, float x, float y, float width, float height)
 	rRect.rect = rect;
 	rRect.radiusX = 8;
 	rRect.radiusY = 8;
-	resource.renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &brush);
+	resource.renderTarget->CreateSolidColorBrush(color, &brush);
 }
 
 void Rect::setRadius(float radius)
@@ -74,6 +74,7 @@ void Rect::setHeight(float height)
 void Rect::setColor(D2D1_COLOR_F color)
 {
 	brush->SetColor(color);
+	this->color = color;
 	requestRedraw();
 }
 

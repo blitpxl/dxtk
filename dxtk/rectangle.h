@@ -10,6 +10,7 @@ protected:
 	ID2D1SolidColorBrush* brush;
 public:
 	float radius;
+	D2D1_COLOR_F color;
 
 	Rect(Control* parent, float x, float y, float width, float height);
 	void setRadius(float radius);
