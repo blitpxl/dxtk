@@ -5,12 +5,11 @@ class Rect : public Control
 {
 	bool rounded;
 protected:
-	D2D1_RECT_F rect;
-	D2D1_ROUNDED_RECT rRect;
+	RRect rRect;
 	ID2D1SolidColorBrush* brush;
 public:
 	float radius;
-	D2D1_COLOR_F color;
+	ColorType color;
 
 	Rect(Control* parent, float x, float y, float width, float height);
 	void setRadius(float radius);
@@ -20,7 +19,7 @@ public:
 	void resize(float width, float height) override;
 	void setWidth(float width) override;
 	void setHeight(float height) override;
-	void setColor(D2D1_COLOR_F color);
+	void setColor(ColorType color);
 	virtual void update() override;
 	virtual void draw() override;
 };

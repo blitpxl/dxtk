@@ -19,17 +19,17 @@ Slider::Slider(Control* parent, float x, float y, float width, float height)
 	inputArea->setAnchor(AnchorType::fill);
 	inputArea->setDraggable(true);
 
-	inputArea->registerSignal("mouse_drag", [this](){
+	inputArea->registerSignal(this, "mouse_drag", [this](){
 		this->handlePos = mapRange(this->handle->localX, 0, this->width - this->handle->width, 0.0, 1.0);
 		this->value = mapRange(this->handlePos, 0.0, 1.0, minValue, maxValue);
 		this->invokeSignal("value_changed");
 	});
-	registerSignal("resize", [this](){
+	registerSignal(this, "resize", [this](){
 		inputArea->setDragLimitX(0, this->width - this->handle->width);
 		this->handle->setX(mapRange(this->handlePos, 0.0, 1.0, 0.0, this->width - this->handle->width));
 		this->valueBar->setWidth(this->handle->localX);
 	});
-	registerSignal("value_changed", [this](){
+	registerSignal(this, "value_changed", [this](){
 		this->valueBar->setWidth(this->handle->localX);
 	});
 }

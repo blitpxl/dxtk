@@ -15,10 +15,13 @@ public:
 	Rect* caret;
 
 	TextField(Control* parent, float x, float y, float width, float height);
+	~TextField();
 
 private:
+	void _updateCaretPosition();
 	void _onCharPressed();
 	void _onKeyPressed();
 	void _caretBlink();
 	void _onFocusChanged();
+	void _onTextFormatChanged();
 };

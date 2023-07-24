@@ -14,10 +14,10 @@ InputArea::InputArea(Control* parent, float x, float y, float width, float heigh
 	move(x, y);
 	resource.window->push(this);
 
-	resource.window->registerSignal("primary_button_up", [this](){ dragging = false; });
-	registerSignal("mouse_enter", [this](){ resource.window->setCursor(cursorName); });
-	registerSignal("mouse_leave", [this](){ resource.window->setCursor(IDC_ARROW); });
-	registerSignal("mouse_drag", [this](){
+	resource.window->registerSignal(this, "primary_button_up", [this](){ dragging = false; });
+	registerSignal(this, "mouse_enter", [this](){ resource.window->setCursor(cursorName); });
+	registerSignal(this, "mouse_leave", [this](){ resource.window->setCursor(IDC_ARROW); });
+	registerSignal(this, "mouse_drag", [this](){
 		if (draggable)
 		{
 			this->parent->setX(std::clamp(mouseX - dragPoint.x, minDragX, maxDragX));
@@ -30,6 +30,7 @@ InputArea::InputArea(Control* parent, float x, float y, float width, float heigh
 
 InputArea::~InputArea()
 {
+	resource.window->unregisterSignal(this, "primary_button_up");
 	resource.window->inputAreas.erase(this);
 }
 

@@ -140,6 +140,12 @@ void Window::OnPrimaryMouseButtonDown(int x, int y)
 			if (inputArea->intersect(x, y))
 			{
 				inputArea->sendPrimaryMouseButtonDown(x, y);
+				
+				if (focusedInputArea && focusedInputArea != inputArea)
+				{
+					focusedInputArea->sendFocusLost();
+					focusedInputArea = nullptr;
+				}
 				if (!focusedInputArea)
 				{
 					inputArea->sendFocusGained();

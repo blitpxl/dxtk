@@ -17,7 +17,7 @@ template <class T> void SafeRelease(T **ppT)
     }
 }
 
-struct SetComparator {
+struct OrderById {
    	bool operator() (Control* a, Control* b) const {
    	    return a->id < b->id;
    	}
@@ -36,8 +36,8 @@ protected:
 	ID2D1Factory* factory;
 	IDWriteFactory* dwriteFactory;
 
-	std::set<Control*, SetComparator> scene;
-	std::set<InputArea*, SetComparator> inputAreas;
+	std::set<Control*, OrderById> scene;
+	std::set<InputArea*, OrderById> inputAreas;
 	std::unordered_map<std::string_view, Control*> nameLookup;
 
 	virtual void Init() = 0;

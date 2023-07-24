@@ -1,19 +1,32 @@
 #include "dxobject.h"
 
-void DxObject::registerSignal(std::string_view signal_name, std::function<void(void)> function)
+void DxObject::registerSignal(DxObject* registrant, std::string_view signalName, std::function<void(void)> callback)
 {
-	signals[signal_name].push_back(function);
+	registry[signalName][registrant].push_back(callback);
 }
 
-void DxObject::unregisterSignal(std::string_view signal_name)
+void DxObject::unregisterSignal(DxObject* registrant, std::string_view signalName)
 {
-	signals.erase(signal_name);
-}
-
-void DxObject::invokeSignal(std::string_view signal_name)
-{
-	for (std::function<void(void)> signal : signals[signal_name])
+	if (signalName != "")
 	{
-		signal();
+		registry[signalName].erase(registrant);
+	}
+	else
+	{
+		for (const auto& [signalName, _] : registry)
+		{
+			registry[signalName].erase(registrant);
+		}
+	}
+}
+
+void DxObject::invokeSignal(std::string_view signalName)
+{
+	for (const auto& [registrant, callbackVector] : registry[signalName])
+	{
+		for (std::function<void(void)> callback : callbackVector)
+		{
+			callback();
+		}
 	}
 }

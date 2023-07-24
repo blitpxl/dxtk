@@ -28,7 +28,7 @@ Control::Control(Control* parent)
 	this->parent = parent;
 	resource.window->push(this);
 
-	parent->registerSignal("dirty", [this](){ setDirty(); });
+	parent->registerSignal(this, "dirty", [this](){ setDirty(); });
 	instanceCounter++;
 	id = instanceCounter;
 }

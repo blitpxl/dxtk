@@ -1,17 +1,18 @@
 #pragma once
-#include <string_view>
-#include <unordered_map>
 #include <vector>
+#include <unordered_map>
+#include <string_view>
 #include <functional>
+
+#include "logging.h"
 
 class DxObject
 {
-	std::unordered_map<std::string_view, std::vector<std::function<void(void)>>> signals;
+	std::unordered_map<std::string_view, std::unordered_map<DxObject*, std::vector<std::function<void(void)>>>> registry;
 public:
 	DxObject() = default;
-	~DxObject() { invokeSignal("destroyed"); }
 
-	void registerSignal(std::string_view signal_name, std::function<void(void)> function);
-	void unregisterSignal(std::string_view signal_name);
-	void invokeSignal(std::string_view signal_name);
+	void registerSignal(DxObject* registrant, std::string_view signalName, std::function<void(void)> callback);
+	void unregisterSignal(DxObject* registrant, std::string_view signalName = "");
+	void invokeSignal(std::string_view signalName);
 };

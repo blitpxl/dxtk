@@ -21,7 +21,7 @@ public:
 	~Button();
 
 	void setText(std::string const& text);
-	void setTextColor(D2D1_COLOR_F color);
+	void setTextColor(ColorType color);
 
 private:
 	bool isPressed;

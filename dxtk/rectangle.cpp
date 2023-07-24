@@ -10,7 +10,7 @@ Rect::Rect(Control* parent, float x, float y, float width, float height)
 	this->width = width;
 	this->height = height;
 	move(x, y);
-	rect = D2D1::RectF(0, 0, width, height);
+	rect = RectF(0, 0, width, height);
 	rRect.rect = rect;
 	rRect.radiusX = 8;
 	rRect.radiusY = 8;
@@ -71,7 +71,7 @@ void Rect::setHeight(float height)
 	requestRedraw();
 }
 
-void Rect::setColor(D2D1_COLOR_F color)
+void Rect::setColor(ColorType color)
 {
 	brush->SetColor(color);
 	this->color = color;

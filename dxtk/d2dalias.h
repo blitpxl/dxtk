@@ -1,8 +1,23 @@
 #pragma once
 
-#define Color D2D1::ColorF
+// Type Aliases
+#define Color 					D2D1::ColorF
+#define ColorType 				D2D1_COLOR_F
+#define RectF 					D2D1::RectF
+#define RectFType 				D2D1_RECT_F
+#define RRect					D2D1_ROUNDED_RECT
+
+// Color Utils
 #define RandomF static_cast <float> (std::rand()) / static_cast <float> (RAND_MAX)
 #define RandomColor Color(RandomF, RandomF, RandomF)
+
+// Text Wrap
+#define Wrap					DWRITE_WORD_WRAPPING_WRAP
+#define NoWrap					DWRITE_WORD_WRAPPING_NO_WRAP
+#define EmergencyBreak			DWRITE_WORD_WRAPPING_EMERGENCY_BREAK
+#define WholeWord				DWRITE_WORD_WRAPPING_WHOLE_WORD
+#define WrapCharacter			DWRITE_WORD_WRAPPING_CHARACTER
+
 
 // Text Alignments
 #define TextAlignLeading 		DWRITE_TEXT_ALIGNMENT_LEADING

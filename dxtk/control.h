@@ -66,6 +66,7 @@ public:
 	float width;
 	float height;
 	float anchorPadding;
+	RectFType rect;
 	bool is_window = false;
 	bool is_debug = false;
 	bool is_drawable = false;

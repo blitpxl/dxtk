@@ -32,16 +32,25 @@ void Label::setText(std::string const& text)
 	requestRedraw();
 }
 
+void Label::setWrapMode(DWRITE_WORD_WRAPPING wrap)
+{
+	textFormat->SetWordWrapping(wrap);
+	this->wrap = wrap;
+	invokeSignal("wrap_mode_changed");
+}
+
 void Label::setTextAlignment(DWRITE_TEXT_ALIGNMENT alignment)
 {
 	textFormat->SetTextAlignment(alignment);
 	textAlignment = alignment;
+	invokeSignal("text_alignment_changed");
 }
 
 void Label::setParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment)
 {
 	textFormat->SetParagraphAlignment(alignment);
 	paragraphAlignment = alignment;
+	invokeSignal("paragraph_alignment_changed");
 }
 
 void Label::setTextFormat(std::string const& fontFamily, float fontSize, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle)
@@ -64,6 +73,7 @@ void Label::setTextFormat(std::string const& fontFamily, float fontSize, DWRITE_
 	);
 	textFormat->SetTextAlignment(textAlignment);
     textFormat->SetParagraphAlignment(paragraphAlignment);
+    invokeSignal("text_format_changed");
 }
 
 FontMetrics Label::getFontMetrics(UINT32 textPosition)
@@ -89,7 +99,7 @@ FontMetrics Label::getFontMetrics(UINT32 textPosition)
 
 	textLayout->HitTestTextPosition(
 		textPosition,
-		FALSE,
+		TRUE,
 		&pointX,
 		&pointY,
 		&metrics

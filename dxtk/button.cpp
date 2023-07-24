@@ -12,13 +12,13 @@ Button::Button(Control* parent, float x, float y, float width, float height)
 
 	inputArea = new InputArea(this, 0, 0, 0, 0);
 	inputArea->setAnchor(AnchorType::fill);
-	inputArea->registerSignal("mouse_enter", [this](){ setColor(stateColor.hover); });
-	inputArea->registerSignal("mouse_leave", [this](){ setColor(stateColor.normal); this->isPressed = false; });
-	inputArea->registerSignal("primary_button_down", [this](){ setColor(stateColor.pressed); invokeSignal("pressed"); });
-	inputArea->registerSignal("primary_button_up", [this](){ setColor(stateColor.hover); invokeSignal("released"); });
+	inputArea->registerSignal(this, "mouse_enter", [this](){ setColor(stateColor.hover); });
+	inputArea->registerSignal(this, "mouse_leave", [this](){ setColor(stateColor.normal); this->isPressed = false; });
+	inputArea->registerSignal(this, "primary_button_down", [this](){ setColor(stateColor.pressed); invokeSignal("pressed"); });
+	inputArea->registerSignal(this, "primary_button_up", [this](){ setColor(stateColor.hover); invokeSignal("released"); });
 
-	registerSignal("pressed", [this](){ isPressed = true; });
-	registerSignal("released", [this](){
+	registerSignal(this, "pressed", [this](){ isPressed = true; });
+	registerSignal(this, "released", [this](){
 		if (isPressed)
 			invokeSignal("clicked");
 	});
@@ -39,7 +39,7 @@ void Button::setText(std::string const& text)
 	label->setText(text);
 }
 
-void Button::setTextColor(D2D1_COLOR_F color)
+void Button::setTextColor(ColorType color)
 {
 	label->setColor(color);
 }

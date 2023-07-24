@@ -106,7 +106,7 @@ public:
 
 		// register a signal to the button so that when you click the button,
 		// it will change the button text to "Hello, world!"
-		button->registerSignal("clicked", [button](){
+		button->registerSignal(this, "clicked", [button](){
 			button->setText("Hello, world!");
 		});
 
