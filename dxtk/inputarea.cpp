@@ -5,7 +5,7 @@ InputArea::InputArea(Control* parent, float x, float y, float width, float heigh
 : Control(parent), cursorName(IDC_ARROW), hasFocus(false), keyboardTracking(false), mouseTracking(true), 
   mouseEntered(false), dragging(false), mouseX(0), mouseY(0),
   draggable(false), dragPoint(0.0f, 0.0f), minDragX(-FLT_MAX), minDragY(-FLT_MAX),
-  maxDragX(FLT_MAX), maxDragY(FLT_MAX)
+  maxDragX(FLT_MAX), maxDragY(FLT_MAX), passThrough(false)
 {
 	this->x = x;
 	this->y = y;
@@ -30,7 +30,7 @@ InputArea::InputArea(Control* parent, float x, float y, float width, float heigh
 
 InputArea::~InputArea()
 {
-	resource.window->unregisterSignal(this, "primary_button_up");
+	resource.window->unregisterSignal(this);
 	resource.window->inputAreas.erase(this);
 }
 
@@ -78,9 +78,27 @@ void InputArea::sendPrimaryMouseButtonDown(int x, int y)
 		dragPoint = mapToLocal((float)x, (float)y);
 }
 
-void InputArea::sendPrimaryMouseButtonUp(int x, int y) { invokeSignal("primary_button_up"); dragging = false; }
-void InputArea::sendSecondayMouseButtonDown(int x, int y) { invokeSignal("secondary_button_down"); }
-void InputArea::sendSecondaryMouseButtonUp(int x, int y) { invokeSignal("secondary_button_up"); }
+void InputArea::sendPrimaryMouseButtonUp(int x, int y)
+{
+	mouseX = x;
+	mouseY = y;
+	dragging = false;
+	invokeSignal("primary_button_up");
+}
+
+void InputArea::sendSecondaryMouseButtonDown(int x, int y)
+{
+	mouseX = x;
+	mouseY = y;
+	invokeSignal("secondary_button_down");
+}
+
+void InputArea::sendSecondaryMouseButtonUp(int x, int y)
+{
+	mouseX = x;
+	mouseY = y;
+	invokeSignal("secondary_button_up");
+}
 
 void InputArea::sendCharPress(wchar_t character)
 {
@@ -119,4 +137,9 @@ void InputArea::setDragLimitY(float minValue, float maxValue)
 {
 	minDragY = minValue;
 	maxDragY = maxValue;
+}
+
+void InputArea::setPassThrough(bool pass)
+{
+	passThrough = pass;
 }

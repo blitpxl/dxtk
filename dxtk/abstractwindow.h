@@ -4,7 +4,7 @@
 #include "unicode.h"
 #include <windows.h>
 #include <dwmapi.h>
-
+#include "logging.h"
 
 template <class DERIVED>
 class BaseWindow

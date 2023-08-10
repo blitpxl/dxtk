@@ -1,7 +1,7 @@
 #include "window.h"
 
 Window::Window()
-: Control(), factory(NULL), renderTarget(NULL), 
+: Control(), factory(NULL), renderTarget(NULL), renderer(DefaultRenderer),
 is_resizing(false), hoveredInputArea(nullptr), focusedInputArea(nullptr),customTitleBar(false)
 {
 	is_window = true;
@@ -33,10 +33,12 @@ HRESULT Window::CreateGraphicsResources()
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
 
 		hr = factory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED)),
+			D2D1::RenderTargetProperties(renderer),
 			D2D1::HwndRenderTargetProperties(getHandle(), size),
 			&renderTarget
 		);
+
+		hr = factory->CreateDrawingStateBlock(&renderState);
 
 		if (SUCCEEDED(hr))
 		{
@@ -75,7 +77,7 @@ void Window::OnPaint()
 		for (Control* control : scene)
 		{
 			control->update();
-			if (control->is_drawable)
+			if (control->is_drawable && control->visible)
 			{
 				control->draw();
 			}
@@ -112,7 +114,8 @@ void Window::OnMouseMove(int x, int y)
 				if (!inputArea->mouseEntered && !hoveredInputArea)
 				{
 					inputArea->sendMouseEnter();
-					hoveredInputArea = inputArea;
+					if (!inputArea->passThrough)
+						hoveredInputArea = inputArea;
 					break;
 				}
 			}
@@ -151,7 +154,8 @@ void Window::OnPrimaryMouseButtonDown(int x, int y)
 					inputArea->sendFocusGained();
 					focusedInputArea = inputArea;
 				}
-				break;
+				if (!inputArea->passThrough)
+					break;
 			}
 			else
 			{
@@ -176,15 +180,68 @@ void Window::OnPrimaryMouseButtonUp(int x, int y)
 			if (inputArea->intersect(x, y))
 			{
 				inputArea->sendPrimaryMouseButtonUp(x, y);
-				break;
+				if (!inputArea->passThrough)
+					break;
 			}
 		}
 	}
 	invokeSignal("primary_button_up");
 }
 
-void Window::OnSecondaryMouseButtonDown(int x, int y) { }  // overridable
-void Window::OnSecondaryMouseButtonUp(int x, int y) { }  // overridable
+void Window::OnSecondaryMouseButtonDown(int x, int y)
+{
+	for (auto it = inputAreas.rbegin(); it != inputAreas.rend(); ++it)
+	{
+		InputArea* inputArea = *it;
+		if (inputArea->mouseTracking)
+		{
+			if (inputArea->intersect(x, y))
+			{
+				inputArea->sendSecondaryMouseButtonDown(x, y);
+				
+				if (focusedInputArea && focusedInputArea != inputArea)
+				{
+					focusedInputArea->sendFocusLost();
+					focusedInputArea = nullptr;
+				}
+				if (!focusedInputArea)
+				{
+					inputArea->sendFocusGained();
+					focusedInputArea = inputArea;
+				}
+				if (!inputArea->passThrough)
+					break;
+			}
+			else
+			{
+				if (focusedInputArea)
+				{
+					focusedInputArea->sendFocusLost();
+					focusedInputArea = nullptr;
+				}
+			}
+		}
+	}
+	invokeSignal("secondary_button_down");
+}
+
+void Window::OnSecondaryMouseButtonUp(int x, int y)
+{
+	for (auto it = inputAreas.rbegin(); it != inputAreas.rend(); ++it)
+	{
+		InputArea* inputArea = *it;
+		if (inputArea->mouseTracking)
+		{
+			if (inputArea->intersect(x, y))
+			{
+				inputArea->sendSecondaryMouseButtonUp(x, y);
+				if (!inputArea->passThrough)
+					break;
+			}
+		}
+	}
+	invokeSignal("secondary_button_up");
+}
 
 void Window::OnCharPress(WPARAM character)
 {
@@ -258,12 +315,23 @@ void Window::setCustomTitleBar(bool enabled)
 	SetWindowPos(getHandle(), nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
 }
 
+void Window::saveRenderState()
+{
+	renderTarget->SaveDrawingState(renderState);
+}
+
+void Window::restoreRenderState()
+{
+	renderTarget->RestoreDrawingState(renderState);
+}
+
 LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	switch (msg)
 	{
 	case WM_CREATE:
-		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &factory)))
+		{
+		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory)))
 		{
 			return -1;
 		}
@@ -279,6 +347,7 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 		resource.dwriteFactory = dwriteFactory;
 		OnPaint();
 		return 0;
+	}
 
 	case WM_DESTROY:
 		DiscardGraphicsResources();

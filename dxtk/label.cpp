@@ -1,4 +1,5 @@
 #include "label.h"
+#include "window.h"
 
 Label::Label(Control* parent, float x, float y, float width, float height)
 : Rect(parent, x, y, width, height), scale(1.0f), textLayout(NULL)
@@ -76,7 +77,34 @@ void Label::setTextFormat(std::string const& fontFamily, float fontSize, DWRITE_
     invokeSignal("text_format_changed");
 }
 
-FontMetrics Label::getFontMetrics(UINT32 textPosition)
+HitInfo Label::getPointHit(float pointX, float pointY)
+{
+	if (!textLayout)
+	{
+		resource.dwriteFactory->CreateTextLayout(
+			text,
+			(UINT32)wcslen(text),
+			textFormat,
+			width,
+			height,
+			&textLayout
+		);
+	}
+
+	HitInfo hitInfo;
+
+	textLayout->HitTestPoint(
+		pointX,
+		pointY,
+		&hitInfo.isTrailingHit,
+		&hitInfo.isInside,
+		&hitInfo.metrics
+	);
+
+	return hitInfo;
+}
+
+HitTestMetrics Label::getFontMetrics(UINT32 textPosition)
 {
 	if (textLayout)
 	{
@@ -93,9 +121,11 @@ FontMetrics Label::getFontMetrics(UINT32 textPosition)
 		&textLayout
 	);
 
+	// unused, just to satisfy parameters
 	float pointX;
 	float pointY;
-	FontMetrics metrics;
+
+	HitTestMetrics metrics;
 
 	textLayout->HitTestTextPosition(
 		textPosition,
@@ -118,6 +148,15 @@ void Label::update()
 
 void Label::draw()
 {
+	resource.window->saveRenderState();
+	for (Control* clipSource : clipSources)
+	{
+		Rect* source = static_cast<Rect*>(clipSource);
+		resource.renderTarget->SetTransform(source->transform);
+		resource.renderTarget->PushAxisAlignedClip(source->rect, D2D1_ANTIALIAS_MODE_ALIASED);
+	}
+	resource.window->restoreRenderState();
+
 	resource.renderTarget->DrawText(
 		text,
 		(UINT32)wcslen(text),
@@ -125,4 +164,9 @@ void Label::draw()
 		rect,
 		brush
 	);
+
+	for (int i = 0; i < clipSources.size(); i++)
+	{
+		resource.renderTarget->PopAxisAlignedClip();
+	}
 }

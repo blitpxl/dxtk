@@ -6,10 +6,12 @@
 class Timer : public DxObject
 {
 	int interval;
-	bool running;
 	bool is_reset;
 	void timerThread();
 public:
+	bool running;
+	bool run;
+
 	Timer(float interval);
 	void start();
 	void stop();

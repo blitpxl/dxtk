@@ -2,11 +2,13 @@
 #include "abstractwindow.h"
 #include "control.h"
 #include "inputarea.h"
+
 #include <windowsx.h>
 #include <d2d1.h>
 #include <dwrite.h>
 #include <vector>
 #include <set>
+#include <thread>
 
 template <class T> void SafeRelease(T **ppT)
 {
@@ -19,7 +21,7 @@ template <class T> void SafeRelease(T **ppT)
 
 struct OrderById {
    	bool operator() (Control* a, Control* b) const {
-   	    return a->id < b->id;
+   	    return std::less<unsigned int>{}(a->id, b->id);
    	}
 };
 
@@ -55,8 +57,10 @@ protected:
 	void OnResize();
 public:
 	ID2D1HwndRenderTarget* renderTarget;
+	ID2D1DrawingStateBlock* renderState;
 	D2D1_COLOR_F backgroundColor;
 	bool is_resizing;
+	D2D1_RENDER_TARGET_TYPE renderer;
 
 	Window();
 
@@ -66,6 +70,8 @@ public:
 	void push(InputArea* inputArea);
 	void windowStartMove();
 	void setCustomTitleBar(bool enabled);
+	void saveRenderState();
+	void restoreRenderState();
 	PCWSTR WindowClassName() const { return L"Window"; }
 	LRESULT HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam);
 };

@@ -54,10 +54,14 @@ class Control : public DxObject
 protected:
 	TargetAnchors targetAnchors;
 	std::wstring strbuf;
-	std::string name;
 public:
+	bool is_window = false;
+	bool is_debug = false;
+	bool is_drawable = false;
+	bool is_dirty = true;
 	static inline unsigned int instanceCounter = 0;
 	static inline SharedResource resource;
+	std::string name;
 	unsigned int id;
 	float x;
 	float y;
@@ -66,11 +70,7 @@ public:
 	float width;
 	float height;
 	float anchorPadding;
-	RectFType rect;
-	bool is_window = false;
-	bool is_debug = false;
-	bool is_drawable = false;
-	bool is_dirty = true;
+	bool visible;
 	Control* parent;
 	std::unordered_map<AnchorType, float> anchors;
 

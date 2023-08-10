@@ -7,14 +7,15 @@ class InputArea : public Control
 {
 	static inline int zCounter;
 	LPWSTR cursorName;
-	bool dragging;
 	bool draggable;
 	Point dragPoint;
 public:
+	bool dragging;
 	bool hasFocus;
 	bool keyboardTracking;
 	bool mouseTracking;
 	bool mouseEntered;
+	bool passThrough;
 	float minDragX;
 	float minDragY;
 	float maxDragX;
@@ -36,7 +37,7 @@ public:
 	void sendMouseDrag(int x, int y);
 	void sendPrimaryMouseButtonDown(int x, int y);
 	void sendPrimaryMouseButtonUp(int x, int y);
-	void sendSecondayMouseButtonDown(int x, int y);
+	void sendSecondaryMouseButtonDown(int x, int y);
 	void sendSecondaryMouseButtonUp(int x, int y);
 	void sendCharPress(wchar_t character);
 	void sendKeyPress(WPARAM key);
@@ -46,4 +47,5 @@ public:
 	void setDraggable(bool draggable);
 	void setDragLimitX(float minValue, float maxValue);
 	void setDragLimitY(float minValue, float maxValue);
+	void setPassThrough(bool pass);
 };

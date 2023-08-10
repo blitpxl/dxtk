@@ -3,28 +3,14 @@
 
 // this constructor should only be used by the window
 Control::Control()
-: name("unnamed")
+: name("unnamed"), x(0), y(0), localX(0), localY(0), width(0), height(0), anchorPadding(0), visible(false)
 {
 	parent = NULL;
-	x = 0;
-	y = 0;
-	localX = 0;
-	localY = 0;
-	width = 0;
-	height = 0;
-	anchorPadding = 0;
 }
 
 Control::Control(Control* parent)
-: name("unnamed")
+: name("unnamed"), x(0), y(0), localX(0), localY(0), width(0), height(0), anchorPadding(0), visible(false)
 {
-	x = 0;
-	y = 0;
-	localX = 0;
-	localY = 0;
-	width = 0;
-	height = 0;
-	anchorPadding = 0;
 	this->parent = parent;
 	resource.window->push(this);
 
@@ -44,8 +30,11 @@ Control::~Control()
 
 void Control::setVisible(bool visible)
 {
-	is_drawable = visible;
-	requestRedraw();
+	if (this->visible != visible)
+	{
+		this->visible = visible;
+		requestRedraw();
+	}
 }
 
 void Control::setName(std::string_view name)
@@ -76,8 +65,16 @@ LPCWSTR Control::toWString(std::string const& string)
 Point Control::mapToLocal(float globalX, float globalY)
 {
 	Point result(0, 0);
-	result.x = (globalX - x) + parent->parent->x;
-	result.y = (globalY - y) + parent->parent->y;
+	if (!parent->is_window)
+	{
+		result.x = (globalX - x) + parent->parent->x;
+		result.y = (globalY - y) + parent->parent->y;
+	}
+	else
+	{
+		result.x = (globalX - x) + parent->x;
+		result.y = (globalY - y) + parent->y;
+	}
 	return result;
 }
 

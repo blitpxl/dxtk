@@ -19,8 +19,11 @@ void Timer::timerThread()
 
 void Timer::start()
 {
-	running = true;
-	std::thread(&Timer::timerThread, this).detach();
+	if (!running)
+	{
+		running = true;
+		std::thread(&Timer::timerThread, this).detach();
+	}
 }
 
 void Timer::stop()

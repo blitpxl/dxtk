@@ -1,0 +1,17 @@
+def side_menu : Rect
+	width: 50
+	anchor.left: anchor.left
+	anchor.top: anchor.top
+	anchor.bottom: anchor.bottom
+
+	def menu_button_colum : Column
+		anchor: anchor.fill
+
+		def menu_button_home : Button
+			height: 40
+			text: Home
+			anchor.left: anchor.left
+			anchor.right: anchor.right
+		end
+	end
+end

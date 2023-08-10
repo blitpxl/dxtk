@@ -14,6 +14,9 @@ void Column::add(Control* control)
 	{
 		control->setY(yPos);
 		yPos+=controls.back()->height+spacing;
+		setHeight(yPos-spacing);
+		if (control->width > width)
+			setWidth(control->width);
 	}
 }
 
@@ -25,6 +28,8 @@ void Column::setSpacing(float spacing)
 	{
 		controls[i]->setY(yPos);
 		if (i != controls.size() - 1)
-			yPos+=controls[i+1]->height+spacing;
+			yPos += controls[i+1]->height + spacing;
 	}
+	const Control* lastControl = controls.back();
+	setHeight(lastControl->localY + lastControl->height);
 }

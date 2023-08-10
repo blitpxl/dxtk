@@ -9,12 +9,10 @@ public:
 	{
 		backgroundColor = Color(0.2f, 0.25f, 0.3f);
 
-		TextField* textField = new TextField(this, 0, 0, 300, 50);
-		textField->setAnchor(AnchorType::fill);
-		textField->setAnchorPadding(2);
-		textField->setRadius(6);
-		textField->text->setParagraphAlignment(ParagraphAlignNear);
-		textField->text->setTextFormat("Segoe UI");
+		TextField* textField = new TextField(this, 0, 0, 300, 32);
+		textField->setAnchor(AnchorType::center);
+		textField->setRadius(4);
+		textField->selectionRect->setRadius(2);
 	}
 };
 

@@ -1,31 +1,40 @@
 #include "textfield.h"
 
 TextField::TextField(Control* parent, float x, float y, float width, float height)
-: Rect(parent, x, y, width, height), caret_position(0)
+: Rect(parent, x, y, width, height), caret_position(0), selectionStart(0), selectionEnd(0), 
+	is_selecting(false)
 {
 	setColor(Color(0.0f, 0.0f, 0.0f, 0.2f));
 
 	text = new Label(this, 0, 0, 0, 0);
+	text->setWrapMode(NoWrap);
 	text->setAnchor(AnchorType::fill);
 	text->setAnchorPadding(8);
 	text->setTextAlignment(TextAlignLeading);
-	text->registerSignal(this, "text_format_changed", std::bind(&TextField::_onTextFormatChanged, this));
+	text->registerSignal(this, "text_format_changed", [this](){ _onTextFormatChanged(); });
+	text->addClipSource(this);
 
 	inputArea = new InputArea(this, 0, 0, 0, 0);
 	inputArea->keyboardTracking = true;
 	inputArea->setCursor(IDC_IBEAM);
 	inputArea->setAnchor(AnchorType::fill);
-	inputArea->registerSignal(this, "char_pressed", std::bind(&TextField::_onCharPressed, this));
-	inputArea->registerSignal(this, "key_pressed", std::bind(&TextField::_onKeyPressed, this));
-	inputArea->registerSignal(this, "focus_changed", std::bind(&TextField::_onFocusChanged, this));
+	inputArea->registerSignal(this, "char_pressed", [this](){ _onCharPressed(); });
+	inputArea->registerSignal(this, "key_pressed", [this](){ _onKeyPressed(); });
+	inputArea->registerSignal(this, "focus_changed", [this](){ _onFocusChanged(); });
+	inputArea->registerSignal(this, "primary_button_down", [this](){ _onPrimaryDown(); });
+	inputArea->registerSignal(this, "mouse_drag", [this](){ _onMouseDrag(); });
+
+	selectionRect = new Rect(text, 0, 0, 0, 0);
+	selectionRect->setColor(Color(1.0f, 1.0f, 1.0f, 0.2f));
 
 	caret = new Rect(text, 0, 0, 2, text->textFormat->GetFontSize() + 2);
 	caret->setColor(Color(1.0f, 0.5f, 0.2f));
 	caret->setVisible(false);
 	caret->setAnchor(AnchorType::verticalCenter, AnchorType::verticalCenter);
+	caret->addClipSource(this);
 
 	caretTimer = new Timer(500);
-	caretTimer->registerSignal(this, "timeout", std::bind(&TextField::_caretBlink, this));
+	caretTimer->registerSignal(this, "timeout", [this](){ _caretBlink(); });
 
 	_updateCaretPosition();
 }
@@ -45,6 +54,45 @@ TextField::~TextField()
 void TextField::_onCharPressed()
 {
 	caret->setAnchor(AnchorType::verticalCenter, AnchorType::none);
+
+	if (is_selecting)
+	{
+		is_selecting = false;
+		// the user selects from right to left, flip the selection start and end
+		if (selectionStart > selectionEnd)
+		{
+			UINT32 temp = selectionEnd;
+			selectionEnd = selectionStart;
+			selectionStart = temp;
+
+			/*
+				if the user selects from right to left, the selection start (which now has been flipped and become selection end)
+				will hit the next character's bounding box (we don't want that), so we decrement selectionEnd by 1
+				so it doesn't delete the next character
+				
+				- rtl selection <- <- <-
+				01234
+				Hello
+				  ^^
+				selectionStart is now 4, selectionEnd is now 1
+			*/
+
+			if (selectionStart > 0)
+				selectionStart += 1;
+			selectionEnd -= 1;
+		}
+
+		value.erase(selectionStart, (selectionEnd - selectionStart) + 1);
+		selectionRect->setVisible(false);
+
+		caret_position = selectionStart;
+		text->setText(value);
+		_updateCaretPosition();
+		if (inputArea->pressedChar == VK_BACK)
+		{
+			goto ret;  // skip everything, just invoke change signal and return
+		}
+	}
 
 	caret->setVisible(true);
 	caretTimer->reset();
@@ -70,12 +118,14 @@ void TextField::_onCharPressed()
 		caret_position++;
 		_updateCaretPosition();
 	}
+
+	ret:
 	invokeSignal("text_changed");
 }
 
 void TextField::_updateCaretPosition()
 {
-	FontMetrics metrics = text->getFontMetrics(caret_position);
+	HitTestMetrics metrics = text->getFontMetrics(caret_position);
 	caret->setX(metrics.left);
 	caret->setY(metrics.top + metrics.height - text->textFormat->GetFontSize() - 2);
 }
@@ -117,7 +167,7 @@ void TextField::_onKeyPressed()
 
 void TextField::_caretBlink()
 {
-	if (caret->is_drawable)
+	if (caret->visible)
 	{
 		caret->setVisible(false);
 	}
@@ -144,4 +194,60 @@ void TextField::_onFocusChanged()
 void TextField::_onTextFormatChanged()
 {
 	caret->setHeight(text->textFormat->GetFontSize() + 2);
+}
+
+void TextField::_onPrimaryDown()
+{
+	is_selecting = false;
+	selectionRect->setVisible(false);
+	caret->setVisible(true);
+
+	Point pt = mapToLocal((float)inputArea->mouseX, (float)inputArea->mouseY);
+	HitInfo hitInfo = text->getPointHit(pt.x - text->anchorPadding, pt.y - text->anchorPadding);
+	if (hitInfo.isTrailingHit)
+	{
+		caret->setX(hitInfo.metrics.left + hitInfo.metrics.width);
+		selectionRect->setX(hitInfo.metrics.left + hitInfo.metrics.width);
+		caret_position = hitInfo.metrics.textPosition + 1;
+		selectionStart = caret_position;
+	}
+	else
+	{
+		caret->setX(hitInfo.metrics.left);
+		selectionRect->setX(hitInfo.metrics.left);
+		caret_position = hitInfo.metrics.textPosition;
+		selectionStart = caret_position;
+	}
+}
+
+void TextField::_onMouseDrag()
+{
+	is_selecting = true;
+	selectionRect->setVisible(true);
+	caret->setVisible(true);
+	caretTimer->reset();
+
+	Point pt = mapToLocal((float)inputArea->mouseX, (float)inputArea->mouseY);
+	HitInfo hitInfo = text->getPointHit(pt.x - text->anchorPadding, pt.y - text->anchorPadding);
+	if (hitInfo.isTrailingHit)
+	{
+		caret->setX(hitInfo.metrics.left + hitInfo.metrics.width);
+		selectionRect->setWidth((hitInfo.metrics.left + hitInfo.metrics.width) - selectionRect->localX);
+		selectionRect->setHeight(hitInfo.metrics.height);
+		caret_position = hitInfo.metrics.textPosition + 1;
+		selectionEnd = caret_position;
+	}
+	else
+	{
+		caret->setX(hitInfo.metrics.left);
+		selectionRect->setWidth(hitInfo.metrics.left - selectionRect->localX);
+		selectionRect->setHeight(hitInfo.metrics.height);
+		caret_position = hitInfo.metrics.textPosition;
+		selectionEnd = caret_position;
+	}
+	selectionRect->setY(hitInfo.metrics.top);
+	if (selectionEnd > 0)
+		selectionEnd -= 1;
+	if (selectionStart == selectionEnd)
+		is_selecting = false;
 }

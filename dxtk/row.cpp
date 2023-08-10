@@ -13,7 +13,10 @@ void Row::add(Control* control)
 	else
 	{
 		control->setX(xPos);
-		xPos+=controls.back()->width+spacing;
+		xPos+=controls.back()->width + spacing;
+		setWidth(xPos-spacing);
+		if (control->height > height)
+			setHeight(control->height);
 	}
 }
 
@@ -25,6 +28,8 @@ void Row::setSpacing(float spacing)
 	{
 		controls[i]->setX(xPos);
 		if (i != controls.size() - 1)
-			xPos+=controls[i+1]->width+spacing;
+			xPos += controls[i+1]->width + spacing;
 	}
+	const Control* lastControl = controls.back();
+	setWidth(lastControl->localX + lastControl->width);
 }

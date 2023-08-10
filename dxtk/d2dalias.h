@@ -1,5 +1,10 @@
 #pragma once
 
+// Renderer
+#define DefaultRenderer			D2D1_RENDER_TARGET_TYPE_DEFAULT
+#define HardwareRenderer		D2D1_RENDER_TARGET_TYPE_HARDWARE
+#define SoftwareRenderer		D2D1_RENDER_TARGET_TYPE_SOFTWARE
+
 // Type Aliases
 #define Color 					D2D1::ColorF
 #define ColorType 				D2D1_COLOR_F
@@ -17,7 +22,6 @@
 #define EmergencyBreak			DWRITE_WORD_WRAPPING_EMERGENCY_BREAK
 #define WholeWord				DWRITE_WORD_WRAPPING_WHOLE_WORD
 #define WrapCharacter			DWRITE_WORD_WRAPPING_CHARACTER
-
 
 // Text Alignments
 #define TextAlignLeading 		DWRITE_TEXT_ALIGNMENT_LEADING
@@ -54,5 +58,5 @@
 #define FontStyleOblique 		DWRITE_FONT_STYLE_OBLIQUE
 #define FontStyleItalic 		DWRITE_FONT_STYLE_ITALIC
 
-// Font Metrics struct
-#define FontMetrics				DWRITE_HIT_TEST_METRICS 
+// HitTest Metrics struct
+#define HitTestMetrics			DWRITE_HIT_TEST_METRICS 
