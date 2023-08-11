@@ -104,6 +104,8 @@ public:
 	void setSize(int w, int h)
 	{
 		MoveWindow(getHandle(), x, y, w+16, h+39, FALSE);
+		this->w = w;
+		this->h = h;
 	}
 
 	HWND getHandle() const { return handle; }
