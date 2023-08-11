@@ -1,13 +1,21 @@
 #include "window.h"
 
 Window::Window()
-: Control(), factory(NULL), renderTarget(NULL), renderer(DefaultRenderer),
-is_resizing(false), hoveredInputArea(nullptr), focusedInputArea(nullptr),customTitleBar(false)
+: Control(), is_resizing(false), hoveredInputArea(nullptr),
+  focusedInputArea(nullptr),customTitleBar(false)
 {
 	is_window = true;
 	backgroundColor = D2D1::ColorF(D2D1::ColorF::Black);
 	resource.window = this;
-	resource.renderTarget = renderTarget;
+
+	renderer.registerSignal(this, "on_graphics_resources_created", [this](){
+		resource.renderTarget = renderer.renderTarget;
+	});
+
+	renderer.registerSignal(this, "on_size_update", [this](){
+		CalculateLayout(renderer.renderTargetSize.width, renderer.renderTargetSize.height);
+		redraw();
+	});
 }
 
 void Window::CalculateLayout(float width, float height)
@@ -22,57 +30,13 @@ void Window::CalculateLayout(float width, float height)
 	anchors[AnchorType::verticalCenter] = anchors[AnchorType::bottom] - (height / 2);
 }
 
-HRESULT Window::CreateGraphicsResources()
-{
-	HRESULT hr = S_OK;
-	if (renderTarget == NULL)
-	{
-		RECT rc;
-		GetClientRect(getHandle(), &rc);
-
-		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
-
-		hr = factory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(renderer),
-			D2D1::HwndRenderTargetProperties(getHandle(), size),
-			&renderTarget
-		);
-
-		hr = factory->CreateDrawingStateBlock(&renderState);
-
-		if (SUCCEEDED(hr))
-		{
-			resource.renderTarget = renderTarget;
-
-			if (scene.size() == 0)
-			{
-				Init();
-			}
-			
-			D2D1_SIZE_F size = renderTarget->GetSize();
-			CalculateLayout(size.width, size.height);
-		}
-	}
-
-	return hr;
-}
-
-void Window::DiscardGraphicsResources()
-{
-	SafeRelease(&renderTarget);
-	// TODO: Fix auto fallback
-}
-
 void Window::OnPaint()
 {
-	HRESULT hr = CreateGraphicsResources();
+	HRESULT hr = renderer.obtainGraphicsResources();
 	if (SUCCEEDED(hr))
 	{
-		PAINTSTRUCT ps;
-		BeginPaint(getHandle(), &ps);
-
-		renderTarget->BeginDraw();
-		renderTarget->Clear(backgroundColor);
+		renderer.begin();
+		renderer.renderTarget->Clear(backgroundColor);
 
 		for (Control* control : scene)
 		{
@@ -83,13 +47,7 @@ void Window::OnPaint()
 			}
 		}
 
-		hr = renderTarget->EndDraw();
-		if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
-		{
-			DiscardGraphicsResources();
-		}
-		EndPaint(getHandle(), &ps);
-
+		renderer.end();
 		is_resizing = false; // if the window was resizing
 	}
 }
@@ -267,19 +225,8 @@ void Window::OnKeyPress(WPARAM key)
 
 void Window::OnResize()
 {
-	if (renderTarget != NULL)
-	{
-		RECT rc;
-		GetClientRect(getHandle(), &rc);
-
-		D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
-		renderTarget->Resize(size);
-		CalculateLayout((float)size.width, (float)size.height);
-
-		is_resizing = true;
-		redraw();
-		invokeSignal("resize");
-	}
+	is_resizing = true;
+	renderer.resize();
 }
 
 void Window::push(Control* control)
@@ -317,12 +264,12 @@ void Window::setCustomTitleBar(bool enabled)
 
 void Window::saveRenderState()
 {
-	renderTarget->SaveDrawingState(renderState);
+	renderer.renderTarget->SaveDrawingState(renderer.renderState);
 }
 
 void Window::restoreRenderState()
 {
-	renderTarget->RestoreDrawingState(renderState);
+	renderer.renderTarget->RestoreDrawingState(renderer.renderState);
 }
 
 LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
@@ -331,27 +278,17 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 	{
 	case WM_CREATE:
 		{
-		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory)))
-		{
-			return -1;
+			renderer.windowHandle = getHandle();
+			renderer.initRenderer();
+			renderer.obtainGraphicsResources();
+			resource.dwriteFactory = renderer.dwriteFactory;
+			Init();
+			OnPaint();
+			return 0;
 		}
-
-		if (FAILED(DWriteCreateFactory(
-			DWRITE_FACTORY_TYPE_SHARED,
-			__uuidof(dwriteFactory),
-			reinterpret_cast<IUnknown **>(&dwriteFactory)
-		)))
-		{
-			return -1;
-		}
-		resource.dwriteFactory = dwriteFactory;
-		OnPaint();
-		return 0;
-	}
 
 	case WM_DESTROY:
-		DiscardGraphicsResources();
-		SafeRelease(&factory);
+		renderer.destroyGraphicsResources();
 		PostQuitMessage(0);
 		return 0;
 

@@ -8,7 +8,11 @@ public:
 	{
 		backgroundColor = Color(0.2f, 0.25f, 0.3f);
 
-		// put your controls here
+		Label* label = new Label(this, 0, 0, 0, 0);
+		label->setAnchor(AnchorType::fill);
+		label->setText("IAN GUANTENG");
+		label->setScale(5.0f);
+		label->setTextFormat("DIN");
 	}
 };
 

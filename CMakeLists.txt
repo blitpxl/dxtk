@@ -16,6 +16,7 @@ add_library(dxtk STATIC
 	dxtk/mathutils.cpp
 	dxtk/inputarea.cpp
 	dxtk/rectangle.cpp
+	dxtk/renderer.cpp
 	dxtk/row.cpp
 	dxtk/slider.cpp
 	dxtk/textfield.cpp

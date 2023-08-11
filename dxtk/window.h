@@ -1,23 +1,13 @@
 #pragma once
 #include "abstractwindow.h"
+#include "renderer.h"
 #include "control.h"
 #include "inputarea.h"
 
 #include <windowsx.h>
-#include <d2d1.h>
-#include <dwrite.h>
 #include <vector>
 #include <set>
 #include <thread>
-
-template <class T> void SafeRelease(T **ppT)
-{
-    if (*ppT)
-    {
-        (*ppT)->Release();
-        *ppT = NULL;
-    }
-}
 
 struct OrderById {
    	bool operator() (Control* a, Control* b) const {
@@ -35,9 +25,6 @@ class Window : public BaseWindow<Window>, public Control
 	InputArea* hoveredInputArea;
 	InputArea* focusedInputArea;
 protected:
-	ID2D1Factory* factory;
-	IDWriteFactory* dwriteFactory;
-
 	std::set<Control*, OrderById> scene;
 	std::set<InputArea*, OrderById> inputAreas;
 	std::unordered_map<std::string_view, Control*> nameLookup;
@@ -52,15 +39,11 @@ protected:
 	void OnSecondaryMouseButtonUp(int x, int y);
 	void OnCharPress(WPARAM character);
 	void OnKeyPress(WPARAM key);
-	HRESULT CreateGraphicsResources();
-	void DiscardGraphicsResources();
 	void OnResize();
 public:
-	ID2D1HwndRenderTarget* renderTarget;
-	ID2D1DrawingStateBlock* renderState;
+	Renderer renderer;
 	D2D1_COLOR_F backgroundColor;
 	bool is_resizing;
-	D2D1_RENDER_TARGET_TYPE renderer;
 
 	Window();
 
