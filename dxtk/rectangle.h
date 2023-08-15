@@ -15,11 +15,13 @@ public:
 	RectFType rect;
 	D2D1_MATRIX_3X2_F transform;
 	float scale;
+	float angle;
 	float radius;
 	ColorType color;
 
 	Rect(Control* parent, float x, float y, float width, float height);
 	void setRadius(float radius);
+	void setRotation(float angle);
 	void move(float x, float y) override;
 	void setX(float x) override;
 	void setY(float y) override;

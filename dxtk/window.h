@@ -25,11 +25,6 @@ class Window : public BaseWindow<Window>, public Control
 	InputArea* hoveredInputArea;
 	InputArea* focusedInputArea;
 protected:
-	std::set<Control*, OrderById> scene;
-	std::set<InputArea*, OrderById> inputAreas;
-	std::unordered_map<std::string_view, Control*> nameLookup;
-
-	virtual void Init() = 0;
 	void CalculateLayout(float width, float height);
 	void OnPaint();
 	void OnMouseMove(int x, int y);
@@ -43,10 +38,18 @@ protected:
 public:
 	Renderer renderer;
 	D2D1_COLOR_F backgroundColor;
+	Point mousePosition;
+
+	std::set<Control*, OrderById> scene;
+	std::set<InputArea*, OrderById> inputAreas;
+	std::unordered_map<std::string_view, Control*> nameLookup;
+	std::unordered_map<UINT32, Control*> timers;
+
 	bool is_resizing;
 
 	Window();
 
+	virtual void Init() = 0;
 	void redraw();
 	void setCursor(LPWSTR cursorName);
 	void push(Control* control);

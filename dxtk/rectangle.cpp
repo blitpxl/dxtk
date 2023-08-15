@@ -2,7 +2,8 @@
 #include "window.h"
 
 Rect::Rect(Control* parent, float x, float y, float width, float height)
-: Control(parent), rounded(false), scale(1.0f), radius(0.0f), color(Color(Color::White)), clipped(false), clip_pushed(false)
+: Control(parent), rounded(false), scale(1.0f), radius(0.0f), color(Color(Color::White)), clipped(false), clip_pushed(false),
+  angle(0.0f)
 {
 	is_drawable = true;
 	visible = true;
@@ -31,6 +32,12 @@ void Rect::setRadius(float radius)
 		radius = 0;
 		rounded = false;
 	}
+}
+
+void Rect::setRotation(float angle)
+{
+	this->angle = angle;
+	requestRedraw();
 }
 
 void Rect::move(float x, float y)
@@ -95,9 +102,10 @@ void Rect::update()
 	Control::update();
 	if (visible)
 	{
+		D2D1::Matrix3x2F transformRot = D2D1::Matrix3x2F::Rotation(angle, D2D1::Point2F(width/2, height/2));
 		D2D1::Matrix3x2F transformScale = D2D1::Matrix3x2F::Scale(D2D1::Size(scale, scale), D2D1::Point2F(width/2, height/2));
 		D2D1::Matrix3x2F transformTrans = D2D1::Matrix3x2F::Translation(x, y);
-		resource.renderTarget->SetTransform(transformScale * transformTrans);
+		resource.renderTarget->SetTransform(transformRot * transformScale * transformTrans);
 		resource.renderTarget->GetTransform(&transform);
 	}
 }

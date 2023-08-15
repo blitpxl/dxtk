@@ -89,6 +89,9 @@ void Window::OnMouseMove(int x, int y)
 			}
 		}
 	}
+	mousePosition.x = x;
+	mousePosition.y = y;
+	invokeSignal("mouse_move");
 }
 
 void Window::OnPrimaryMouseButtonDown(int x, int y)
@@ -282,6 +285,7 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 			renderer.initRenderer();
 			renderer.obtainGraphicsResources();
 			resource.dwriteFactory = renderer.dwriteFactory;
+			resource.imageFactory = renderer.imageFactory;
 			Init();
 			OnPaint();
 			return 0;
@@ -350,6 +354,10 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
     case WM_KEYDOWN:
     	OnKeyPress(wparam);
     	break;
+
+    case WM_TIMER:
+    	timers[wparam]->invokeSignal("timeout");
+    	return 0;
 	}
 
 	return DefWindowProc(getHandle(), msg, wparam, lparam);

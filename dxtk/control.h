@@ -1,13 +1,16 @@
 #pragma once
 #include "unicode.h"
+
 #include <unordered_map>
 #include <d2d1.h>
 #include <dwrite.h>
+#include <wincodec.h>
 #include <string_view>
 
 #include "dxobject.h"
 #include "d2dalias.h"
 #include "logging.h"
+#include "dxmacros.h"
 
 // declaration for SharedResource
 class Window;
@@ -22,6 +25,7 @@ struct SharedResource
 {
 	ID2D1HwndRenderTarget* renderTarget;
 	IDWriteFactory* dwriteFactory;
+	IWICImagingFactory* imageFactory;
 	Window* window;
 };
 

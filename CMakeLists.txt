@@ -12,7 +12,9 @@ add_library(dxtk STATIC
 	dxtk/control.cpp
 	dxtk/column.cpp
 	dxtk/dxobject.cpp
+	dxtk/image.cpp
 	dxtk/label.cpp
+	dxtk/line.cpp
 	dxtk/mathutils.cpp
 	dxtk/inputarea.cpp
 	dxtk/rectangle.cpp
@@ -22,6 +24,7 @@ add_library(dxtk STATIC
 	dxtk/textfield.cpp
 	dxtk/timer.cpp
 	dxtk/window.cpp
+	dxtk/wintimer.cpp
 )
 
 set(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:WINDOWS /DEBUG")
@@ -30,6 +33,6 @@ add_executable(demo main.cpp)
 target_include_directories(demo PRIVATE ./dxtk 
 	#./bass
 )
-target_link_libraries(demo dxtk user32 dwmapi d2d1 dwrite 
+target_link_libraries(demo dxtk user32 dwmapi d2d1 dxguid dwrite
 	#../bass/bass
 )

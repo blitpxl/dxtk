@@ -151,6 +151,14 @@ void Control::setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor)
 		targetAnchors.horizontalCenter = AnchorType::horizontalCenter;
 		targetAnchors.verticalCenter = AnchorType::verticalCenter;
 		break;
+	case AnchorType::none:
+		targetAnchors.left = AnchorType::none;
+		targetAnchors.top = AnchorType::none;
+		targetAnchors.right = AnchorType::none;
+		targetAnchors.bottom = AnchorType::none;
+		targetAnchors.horizontalCenter = AnchorType::none;
+		targetAnchors.verticalCenter = AnchorType::none;
+		targetAnchors.fill = AnchorType::none;
 	}
 	setDirty();
 }

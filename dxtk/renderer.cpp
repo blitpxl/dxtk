@@ -1,7 +1,8 @@
 #include "renderer.h"
 
 Renderer::Renderer()
-: renderTarget(NULL) {}
+: factory(NULL), dwriteFactory(NULL), imageFactory(NULL), renderTarget(NULL), 
+  scaling(1.0f) {}
 
 void Renderer::initRenderer()
 {
@@ -17,6 +18,13 @@ void Renderer::initRenderer()
 	)))
 	{
 		print("Failed to create DirectWrite Factory");
+		return;
+	}
+
+	CoInitialize(nullptr);
+	if (FAILED(CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&imageFactory))))
+	{
+		print("Failed to create Image Factory");
 		return;
 	}
 }
@@ -62,6 +70,11 @@ void Renderer::destroyGraphicsResources()
 	SafeRelease(&renderState);
 }
 
+void Renderer::setRenderScale(float scaling)
+{
+	this->scaling = scaling;
+}
+
 void Renderer::begin()
 {
 	BeginPaint(windowHandle, &paintStruct);
@@ -85,7 +98,7 @@ void Renderer::resize()
 	{
 		RECT clientRect;
 		GetClientRect(windowHandle, &clientRect);
-		D2D1_SIZE_U windowSize = D2D1::SizeU(clientRect.right, clientRect.bottom);
+		D2D1_SIZE_U windowSize = D2D1::SizeU((UINT32)(clientRect.right * scaling), (UINT32)(clientRect.bottom * scaling));
 		renderTarget->Resize(windowSize);
 		renderTargetSize = renderTarget->GetSize();
 		invokeSignal("on_size_update");
