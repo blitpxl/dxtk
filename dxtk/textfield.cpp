@@ -12,7 +12,7 @@ TextField::TextField(Control* parent, float x, float y, float width, float heigh
 	text->setAnchorPadding(8);
 	text->setTextAlignment(TextAlignLeading);
 	text->registerSignal(this, "text_format_changed", [this](){ _onTextFormatChanged(); });
-	text->addClipSource(this);
+	text->addClipRectSource(this);
 
 	inputArea = new InputArea(this, 0, 0, 0, 0);
 	inputArea->keyboardTracking = true;
@@ -31,7 +31,7 @@ TextField::TextField(Control* parent, float x, float y, float width, float heigh
 	caret->setColor(Color(1.0f, 0.5f, 0.2f));
 	caret->setVisible(false);
 	caret->setAnchor(AnchorType::verticalCenter, AnchorType::verticalCenter);
-	caret->addClipSource(this);
+	caret->addClipRectSource(this);
 
 	caretTimer = new Timer(500);
 	caretTimer->registerSignal(this, "timeout", [this](){ _caretBlink(); });

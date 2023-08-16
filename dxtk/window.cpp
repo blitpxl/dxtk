@@ -89,8 +89,8 @@ void Window::OnMouseMove(int x, int y)
 			}
 		}
 	}
-	mousePosition.x = x;
-	mousePosition.y = y;
+	mousePosition.x = (float)x;
+	mousePosition.y = (float)y;
 	invokeSignal("mouse_move");
 }
 
@@ -356,7 +356,7 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
     	break;
 
     case WM_TIMER:
-    	timers[wparam]->invokeSignal("timeout");
+    	timers[(UINT32)wparam]->invokeSignal("timeout");
     	return 0;
 	}
 

@@ -11,6 +11,7 @@ add_library(dxtk STATIC
 	dxtk/button.cpp
 	dxtk/control.cpp
 	dxtk/column.cpp
+	dxtk/drawable.cpp
 	dxtk/dxobject.cpp
 	dxtk/image.cpp
 	dxtk/label.cpp

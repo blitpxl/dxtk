@@ -1,5 +1,5 @@
 #include <window.h>
-#include <inputarea.h>
+#include <textfield.h>
 #include <line.h>
 
 class MyWindow : public Window
@@ -7,12 +7,15 @@ class MyWindow : public Window
 public:
 	void Init()
 	{
+		backgroundColor = Color(0.15f, 0.15f, 0.15f);
+
 		Line* line = new Line(this, Point(50, 50), Point(100, 100));
 		line->setThickness(15.0f);
 		line->setColor(Color(0xFF8484));
-		registerSignal(this, "mouse_move", [this, line](){
-			line->setPoints(Point(100, 100), this->mousePosition);
-		});
+		line->setPoints(Point(50, 50), Point(100, 200));
+
+		TextField* field = new TextField(this, 0, 0, 300, 40);
+		field->setAnchor(AnchorType::center);
 	}
 };
 

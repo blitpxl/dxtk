@@ -1,7 +1,7 @@
 #include "line.h"
 
 Line::Line(Control* parent, Point pointA, Point pointB)
-: Control(parent), pointA(D2D1::Point2F(pointA.x, pointA.y)), pointB(D2D1::Point2F(pointB.x, pointB.y)), thickness(1.0f)
+: Drawable(parent), pointA(D2D1::Point2F(pointA.x, pointA.y)), pointB(D2D1::Point2F(pointB.x, pointB.y)), thickness(1.0f)
 {
 	is_drawable = true;
 	visible = true;
@@ -17,29 +17,15 @@ void Line::setPoints(Point pointA, Point pointB)
 	requestRedraw();
 }
 
-void Line::setColor(ColorType color)
-{
-	brush->SetColor(color);
-	requestRedraw();
-}
-
 void Line::setThickness(float thickness)
 {
 	this->thickness = thickness;
 	requestRedraw();
 }
 
-void Line::update()
-{
-	Control::update();
-	if (visible)
-	{
-		D2D1::Matrix3x2F transformTrans = D2D1::Matrix3x2F::Translation(x, y);
-		resource.renderTarget->SetTransform(transformTrans);
-	}
-}
-
 void Line::draw()
 {
+	pushRectClip();
 	resource.renderTarget->DrawLine(pointA, pointB, brush, thickness);
+	popRectClip();
 }

@@ -1,12 +1,8 @@
 #include "rectangle.h"
-#include "window.h"
 
 Rect::Rect(Control* parent, float x, float y, float width, float height)
-: Control(parent), rounded(false), scale(1.0f), radius(0.0f), color(Color(Color::White)), clipped(false), clip_pushed(false),
-  angle(0.0f)
+: Drawable(parent), rounded(false), radius(0.0f)
 {
-	is_drawable = true;
-	visible = true;
 	this->x = x;
 	this->y = y;
 	this->width = width;
@@ -16,7 +12,6 @@ Rect::Rect(Control* parent, float x, float y, float width, float height)
 	rRect.rect = rect;
 	rRect.radiusX = 8;
 	rRect.radiusY = 8;
-	resource.renderTarget->CreateSolidColorBrush(color, &brush);
 }
 
 void Rect::setRadius(float radius)
@@ -32,12 +27,6 @@ void Rect::setRadius(float radius)
 		radius = 0;
 		rounded = false;
 	}
-}
-
-void Rect::setRotation(float angle)
-{
-	this->angle = angle;
-	requestRedraw();
 }
 
 void Rect::move(float x, float y)
@@ -79,55 +68,14 @@ void Rect::setHeight(float height)
 	requestRedraw();
 }
 
-void Rect::setScale(float scale)
-{
-	this->scale = scale;
-	requestRedraw();
-}
-
-void Rect::setColor(ColorType color)
-{
-	brush->SetColor(color);
-	this->color = color;
-	requestRedraw();
-}
-
-void Rect::addClipSource(Control* control)
-{
-	clipSources.push_back(control);
-}
-
-void Rect::update()
-{
-	Control::update();
-	if (visible)
-	{
-		D2D1::Matrix3x2F transformRot = D2D1::Matrix3x2F::Rotation(angle, D2D1::Point2F(width/2, height/2));
-		D2D1::Matrix3x2F transformScale = D2D1::Matrix3x2F::Scale(D2D1::Size(scale, scale), D2D1::Point2F(width/2, height/2));
-		D2D1::Matrix3x2F transformTrans = D2D1::Matrix3x2F::Translation(x, y);
-		resource.renderTarget->SetTransform(transformRot * transformScale * transformTrans);
-		resource.renderTarget->GetTransform(&transform);
-	}
-}
-
 void Rect::draw()
 {
-	resource.window->saveRenderState();
-	for (Control* clipSource : clipSources)
-	{
-		Rect* source = static_cast<Rect*>(clipSource);
-		resource.renderTarget->SetTransform(source->transform);
-		resource.renderTarget->PushAxisAlignedClip(source->rect, D2D1_ANTIALIAS_MODE_ALIASED);
-	}
-	resource.window->restoreRenderState();
+	pushRectClip();
 
 	if (rounded)
 		resource.renderTarget->FillRoundedRectangle(rRect, brush);
 	else
 		resource.renderTarget->FillRectangle(rect, brush);
 
-	for (int i = 0; i < clipSources.size(); i++)
-	{
-		resource.renderTarget->PopAxisAlignedClip();
-	}
+	popRectClip();
 }

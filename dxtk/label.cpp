@@ -1,8 +1,7 @@
 #include "label.h"
-#include "window.h"
 
 Label::Label(Control* parent, float x, float y, float width, float height)
-: Rect(parent, x, y, width, height), scale(1.0f), textLayout(NULL)
+: Rect(parent, x, y, width, height), textLayout(NULL)
 {
 	resource.dwriteFactory->CreateTextFormat(
     	L"Consolas",
@@ -11,7 +10,7 @@ Label::Label(Control* parent, float x, float y, float width, float height)
     	DWRITE_FONT_STYLE_NORMAL,
     	DWRITE_FONT_STRETCH_NORMAL,
     	14.0f,
-    	L"", //locale
+    	L"", // locale
     	&textFormat
     );
 	textFormat->SetTextAlignment(TextAlignCenter);
@@ -19,12 +18,6 @@ Label::Label(Control* parent, float x, float y, float width, float height)
     paragraphAlignment = ParagraphAlignCenter;
     textAlignment = TextAlignCenter;
     text = L"";
-}
-
-void Label::setScale(float scale)
-{
-	this->scale = scale;
-	requestRedraw();
 }
 
 void Label::setText(std::string const& text)
@@ -138,24 +131,9 @@ HitTestMetrics Label::getFontMetrics(UINT32 textPosition)
 	return metrics;
 }
 
-void Label::update()
-{
-	Control::update();
-	D2D1::Matrix3x2F transformScale = D2D1::Matrix3x2F::Scale(D2D1::Size(scale, scale), D2D1::Point2F(width/2, height/2));
-	D2D1::Matrix3x2F transformTrans = D2D1::Matrix3x2F::Translation(x, y);
-	resource.renderTarget->SetTransform(transformScale * transformTrans);
-}
-
 void Label::draw()
 {
-	resource.window->saveRenderState();
-	for (Control* clipSource : clipSources)
-	{
-		Rect* source = static_cast<Rect*>(clipSource);
-		resource.renderTarget->SetTransform(source->transform);
-		resource.renderTarget->PushAxisAlignedClip(source->rect, D2D1_ANTIALIAS_MODE_ALIASED);
-	}
-	resource.window->restoreRenderState();
+	pushRectClip();
 
 	resource.renderTarget->DrawText(
 		text,
@@ -165,8 +143,5 @@ void Label::draw()
 		brush
 	);
 
-	for (int i = 0; i < clipSources.size(); i++)
-	{
-		resource.renderTarget->PopAxisAlignedClip();
-	}
+	popRectClip();
 }
