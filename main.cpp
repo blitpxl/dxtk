@@ -1,29 +1,30 @@
 #include <window.h>
-#include <textfield.h>
-#include <line.h>
+#include <label.h>
+#include <timer.h>
 
-class MyWindow : public Window
+class MyApp : public Window
 {
 public:
 	void Init()
 	{
-		backgroundColor = Color(0.15f, 0.15f, 0.15f);
+		auto label = new Label(this, DefaultPos, DefaultSize);
+		label->setText("Hello DXTK!");
+		label->setAnchor(AnchorType::fill);
+		label->setScale(5.0f);
 
-		Line* line = new Line(this, Point(50, 50), Point(100, 100));
-		line->setThickness(15.0f);
-		line->setColor(Color(0xFF8484));
-		line->setPoints(Point(50, 50), Point(100, 200));
-
-		TextField* field = new TextField(this, 0, 0, 300, 40);
-		field->setAnchor(AnchorType::center);
+		auto timer = new Timer(14.0f);
+		timer->registerSignal(this, "timeout", [timer, label](){
+			label->setRotation(label->rotation+1.0f);
+		});
+		timer->start();
 	}
 };
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-	MyWindow window;
-	window.create(L"DXTK Demo", -1, -1, 900, 600);
-	window.setDark();
-	window.show();
-	window.init();
+	MyApp app;
+	app.create(L"My App", -1, -1, 900, 600);
+	app.setDark();
+	app.show();
+	app.init();
 }

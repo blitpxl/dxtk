@@ -22,7 +22,6 @@ void Row::add(Control* control)
 
 void Row::setSpacing(float spacing)
 {
-	this->spacing = spacing;
 	xPos = 0;
 	for (int i = 0; i < controls.size(); i++)
 	{
@@ -32,4 +31,5 @@ void Row::setSpacing(float spacing)
 	}
 	const Control* lastControl = controls.back();
 	setWidth(lastControl->localX + lastControl->width);
+	this->spacing = spacing;
 }

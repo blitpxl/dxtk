@@ -1,7 +1,7 @@
 #include "rectangle.h"
 
 Rect::Rect(Control* parent, float x, float y, float width, float height)
-: Drawable(parent), rounded(false), radius(0.0f)
+: Drawable(parent), rounded(false), radius(0.0f), borderWidth(0.0f), borderColor(Color(Color::Black))
 {
 	this->x = x;
 	this->y = y;
@@ -12,6 +12,7 @@ Rect::Rect(Control* parent, float x, float y, float width, float height)
 	rRect.rect = rect;
 	rRect.radiusX = 8;
 	rRect.radiusY = 8;
+	resource.renderTarget->CreateSolidColorBrush(borderColor, &borderBrush);
 }
 
 void Rect::setRadius(float radius)
@@ -27,6 +28,19 @@ void Rect::setRadius(float radius)
 		radius = 0;
 		rounded = false;
 	}
+}
+
+void Rect::setBorderWidth(float borderWidth)
+{
+	this->borderWidth = borderWidth;
+	requestRedraw();
+}
+
+void Rect::setBorderColor(ColorType color)
+{
+	this->borderColor = color;
+	borderBrush->SetColor(color);
+	requestRedraw();
 }
 
 void Rect::move(float x, float y)
@@ -73,9 +87,17 @@ void Rect::draw()
 	pushRectClip();
 
 	if (rounded)
+	{
 		resource.renderTarget->FillRoundedRectangle(rRect, brush);
+		if (borderWidth > 0.0f)
+			resource.renderTarget->DrawRoundedRectangle(rRect, borderBrush, borderWidth);
+	}
 	else
+	{
 		resource.renderTarget->FillRectangle(rect, brush);
+		if (borderWidth > 0.0f)
+			resource.renderTarget->DrawRectangle(rect, borderBrush, borderWidth);
+	}
 
 	popRectClip();
 }

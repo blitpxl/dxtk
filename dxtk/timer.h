@@ -5,10 +5,10 @@
 
 class Timer : public DxObject
 {
-	int interval;
 	bool is_reset;
 	void timerThread();
 public:
+	int interval;
 	bool running;
 	bool run;
 

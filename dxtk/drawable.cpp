@@ -13,16 +13,19 @@ void Drawable::setScale(float scale)
 {
 	this->scale = scale;
 	requestRedraw();
+	invokeSignal("on_scale_changed");
 }
 
 void Drawable::setRotation(float angle)
 {
 	rotation = angle;
 	requestRedraw();
+	invokeSignal("on_rotation_changed");
 }
 
 void Drawable::setColor(ColorType color)
 {
+	this->color = color;
 	brush->SetColor(color);
 	requestRedraw();
 }
