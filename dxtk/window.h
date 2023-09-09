@@ -50,6 +50,7 @@ public:
 	Window();
 
 	virtual void Init() = 0;
+	virtual void ImmediateDraw() {};
 	void redraw();
 	void setCursor(LPWSTR cursorName);
 	void push(Control* control);

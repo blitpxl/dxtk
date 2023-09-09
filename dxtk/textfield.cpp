@@ -26,6 +26,7 @@ TextField::TextField(Control* parent, float x, float y, float width, float heigh
 
 	selectionRect = new Rect(text, 0, 0, 0, 0);
 	selectionRect->setColor(Color(1.0f, 1.0f, 1.0f, 0.2f));
+	selectionRect->addClipRectSource(this);
 
 	caret = new Rect(text, 0, 0, 2, text->textFormat->GetFontSize() + 2);
 	caret->setColor(Color(1.0f, 0.5f, 0.2f));
@@ -41,14 +42,14 @@ TextField::TextField(Control* parent, float x, float y, float width, float heigh
 
 TextField::~TextField()
 {
+	text->unregisterSignal(this);
+	inputArea->unregisterSignal(this);
+	caretTimer->unregisterSignal(this);
+
 	delete caretTimer;
 	delete text;
 	delete inputArea;
 	delete caret;
-
-	text->unregisterSignal(this);
-	inputArea->unregisterSignal(this);
-	caretTimer->unregisterSignal(this);
 }
 
 void TextField::_onCharPressed()

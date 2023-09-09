@@ -21,6 +21,7 @@ add_library(dxtk STATIC
 	dxtk/rectangle.cpp
 	dxtk/renderer.cpp
 	dxtk/row.cpp
+	dxtk/shapes.cpp
 	dxtk/slider.cpp
 	dxtk/textfield.cpp
 	dxtk/timer.cpp

@@ -38,6 +38,8 @@ void Window::OnPaint()
 		renderer.begin();
 		renderer.renderTarget->Clear(backgroundColor);
 
+		ImmediateDraw();
+
 		for (Control* control : scene)
 		{
 			control->update();
