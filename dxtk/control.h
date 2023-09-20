@@ -53,19 +53,27 @@ struct TargetAnchors
 	AnchorType fill				= AnchorType::none;
 };
 
+struct AnchorMargin
+{
+	float left 		= 0.0f;
+	float top 		= 0.0f;
+	float right 	= 0.0f;
+	float bottom 	= 0.0f;
+};
+
 class Control : public DxObject
 {
 protected:
 	TargetAnchors targetAnchors;
 	std::wstring strbuf;
 public:
+	static inline unsigned int instanceCounter = 0;
+	static inline SharedResource resource;
+
 	bool is_window = false;
 	bool is_debug = false;
 	bool is_drawable = false;
 	bool is_dirty = true;
-	static inline unsigned int instanceCounter = 0;
-	static inline SharedResource resource;
-	std::string name;
 	unsigned int id;
 	float x;
 	float y;
@@ -73,10 +81,12 @@ public:
 	float localY;
 	float width;
 	float height;
-	float anchorPadding;
 	bool visible;
+
+	std::string name;
 	Control* parent;
 	std::unordered_map<AnchorType, float> anchors;
+	AnchorMargin margins;
 
 	Control();
 	Control(Control* parent);
@@ -85,7 +95,8 @@ public:
 	void setVisible(bool visible);
 	void setName(std::string_view name);
 	void setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor = AnchorType::none);
-	void setAnchorPadding(float padding);
+	void setAnchorMargin(AnchorType anchorType, float margin);
+	void setAnchorMargin(float margin);
 	void requestRedraw();
 	void setDirty();
 	LPCWSTR toWString(std::string const& string);

@@ -9,7 +9,7 @@ TextField::TextField(Control* parent, float x, float y, float width, float heigh
 	text = new Label(this, 0, 0, 0, 0);
 	text->setWrapMode(NoWrap);
 	text->setAnchor(AnchorType::fill);
-	text->setAnchorPadding(8);
+	text->setAnchorMargin(8);
 	text->setTextAlignment(TextAlignLeading);
 	text->registerSignal(this, "text_format_changed", [this](){ _onTextFormatChanged(); });
 	text->addClipRectSource(this);
@@ -204,7 +204,7 @@ void TextField::_onPrimaryDown()
 	caret->setVisible(true);
 
 	Point pt = mapToLocal((float)inputArea->mouseX, (float)inputArea->mouseY);
-	HitInfo hitInfo = text->getPointHit(pt.x - text->anchorPadding, pt.y - text->anchorPadding);
+	HitInfo hitInfo = text->getPointHit(pt.x - text->margins.left, pt.y - text->margins.top);
 	if (hitInfo.isTrailingHit)
 	{
 		caret->setX(hitInfo.metrics.left + hitInfo.metrics.width);
@@ -229,7 +229,7 @@ void TextField::_onMouseDrag()
 	caretTimer->reset();
 
 	Point pt = mapToLocal((float)inputArea->mouseX, (float)inputArea->mouseY);
-	HitInfo hitInfo = text->getPointHit(pt.x - text->anchorPadding, pt.y - text->anchorPadding);
+	HitInfo hitInfo = text->getPointHit(pt.x - text->margins.left, pt.y - text->margins.top);
 	if (hitInfo.isTrailingHit)
 	{
 		caret->setX(hitInfo.metrics.left + hitInfo.metrics.width);

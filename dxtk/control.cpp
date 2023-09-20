@@ -3,13 +3,13 @@
 
 // this constructor should only be used by the window
 Control::Control()
-: name("unnamed"), x(0), y(0), localX(0), localY(0), width(0), height(0), anchorPadding(0), visible(false)
+: name("unnamed"), x(0), y(0), localX(0), localY(0), width(0), height(0), visible(false)
 {
 	parent = NULL;
 }
 
 Control::Control(Control* parent)
-: name("unnamed"), x(0), y(0), localX(0), localY(0), width(0), height(0), anchorPadding(0), visible(false)
+: name("unnamed"), x(0), y(0), localX(0), localY(0), width(0), height(0), visible(false)
 {
 	this->parent = parent;
 	resource.window->push(this);
@@ -163,10 +163,31 @@ void Control::setAnchor(AnchorType controlAnchor, AnchorType targetParentAnchor)
 	setDirty();
 }
 
-void Control::setAnchorPadding(float padding)
+void Control::setAnchorMargin(AnchorType anchorType, float margin)
 {
-	anchorPadding = padding;
-	setDirty();
+	switch (anchorType)
+	{
+	case AnchorType::left:
+		margins.left = margin;
+		break;
+	case AnchorType::top:
+		margins.top = margin;
+		break;
+	case AnchorType::right:
+		margins.right = margin;
+		break;
+	case AnchorType::bottom:
+		margins.bottom = margin;
+		break;
+	}
+}
+
+void Control::setAnchorMargin(float margin)
+{
+	margins.left = margin;
+	margins.top = margin;
+	margins.right = margin;
+	margins.bottom = margin;
 }
 
 void Control::update()
@@ -176,12 +197,12 @@ void Control::update()
 		if (targetAnchors.fill != AnchorType::fill)
 		{
 			if (targetAnchors.left != AnchorType::none)
-				x = parent->anchors[targetAnchors.left] + anchorPadding;
+				x = parent->anchors[targetAnchors.left] + margins.left;
 			else
 				x = parent->x + localX;
 		
 			if (targetAnchors.top != AnchorType::none)
-				y = parent->anchors[targetAnchors.top] + anchorPadding;
+				y = parent->anchors[targetAnchors.top] + margins.top;
 			else
 				y = parent->y + localY;
 		
@@ -189,11 +210,11 @@ void Control::update()
 			{
 				if (targetAnchors.left != AnchorType::none) // if the opposite anchor is set, then stretch the control rather than moving them
 				{
-					width = parent->width - (anchorPadding * 2);
+					width = parent->width - (margins.left + margins.right);
 				}
 				else
 				{
-					x = (parent->anchors[targetAnchors.right] - width) - anchorPadding;
+					x = (parent->anchors[targetAnchors.right] - width) - margins.right;
 				}
 			}
 	
@@ -201,11 +222,11 @@ void Control::update()
 			{
 				if (targetAnchors.top != AnchorType::none)
 				{
-					height = parent->height - (anchorPadding * 2);
+					height = parent->height - (margins.top + margins.bottom);
 				}
 				else
 				{
-					y = (parent->anchors[targetAnchors.bottom] - height) - anchorPadding;
+					y = (parent->anchors[targetAnchors.bottom] - height) - margins.bottom;
 				}
 			}
 	
@@ -221,10 +242,10 @@ void Control::update()
 		}
 		else
 		{
-			this->x = (parent->x + localX) + anchorPadding;
-			this->y = (parent->y + localY) + anchorPadding;
-			width = parent->width - (anchorPadding * 2);
-			height = parent->height - (anchorPadding * 2);
+			this->x = (parent->x + localX) + margins.left;
+			this->y = (parent->y + localY) + margins.top;
+			width = parent->width - (margins.right + margins.left);
+			height = parent->height - (margins.bottom + margins.top);
 		}
 
 		resize(width, height);
