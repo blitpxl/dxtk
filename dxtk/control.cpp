@@ -14,6 +14,7 @@ Control::Control(Control* parent)
 	this->parent = parent;
 	resource.window->push(this);
 
+	// propagate dirty signal from parent to children
 	parent->registerSignal(this, "dirty", [this](){ setDirty(); });
 	instanceCounter++;
 	id = instanceCounter;
@@ -247,8 +248,6 @@ void Control::update()
 			width = parent->width - (margins.right + margins.left);
 			height = parent->height - (margins.bottom + margins.top);
 		}
-
-		resize(width, height);
 	
 		anchors[AnchorType::left] = x;
 		anchors[AnchorType::top] = y;
@@ -258,6 +257,7 @@ void Control::update()
 		anchors[AnchorType::verticalCenter] = anchors[AnchorType::bottom] - (height / 2);
 
 		is_dirty = false;
+		invokeSignal("update");
 	}
 }
 

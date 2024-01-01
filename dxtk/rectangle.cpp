@@ -13,6 +13,12 @@ Rect::Rect(Control* parent, float x, float y, float width, float height)
 	rRect.radiusX = 8;
 	rRect.radiusY = 8;
 	resource.renderTarget->CreateSolidColorBrush(borderColor, &borderBrush);
+
+	registerSignal(this, "update_rect", [this](){
+		this->rect.right = this->width;
+		this->rect.bottom = this->height;
+		this->rRect.rect = this->rect;
+	});
 }
 
 void Rect::setRadius(float radius)
@@ -64,21 +70,21 @@ void Rect::setY(float y)
 void Rect::resize(float width, float height)
 {
 	Control::resize(width, height);
-	rect.right = width;
-	rect.bottom = height;
-	rRect.rect = rect;
+	invokeSignal("update_rect");
 	requestRedraw();
 }
 
 void Rect::setWidth(float width)
 {
 	Control::setWidth(width);
+	invokeSignal("update_rect");
 	requestRedraw();
 }
 
 void Rect::setHeight(float height)
 {
 	Control::setHeight(height);
+	invokeSignal("update_rect");
 	requestRedraw();
 }
 
