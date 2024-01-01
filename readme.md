@@ -125,6 +125,7 @@ I built this library to better understand how GUI Frameworks such as Qt and GTK 
 The current state of the project is still in a phase that I call "Good enough for small hobby projects but not for production and public use." as there's still so many Controls that I haven't implemented yet:
 
 - [x] Label
+- [x] Image
 - [x] Button
 - [x] Horizontal Slider
 - [ ] Vertical Slider
@@ -132,10 +133,12 @@ The current state of the project is still in a phase that I call "Good enough fo
 - [ ] CheckBox
 - [ ] ComboBox
 - [ ] Radio Button
-- [x] Row (still buggy)
-- [x] Column (still buggy)
+- [x] Row
+- [x] Column
 - [x] Rectangle
 - [x] Rounded Rectangle
 - [x] Timer
 - [x] InputArea
 - [ ] ScrollView/Bar
+- [ ] Multi-DPI Support
+- [ ] Multi-Window Support
