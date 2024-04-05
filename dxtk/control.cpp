@@ -258,6 +258,7 @@ void Control::update()
 
 		is_dirty = false;
 		invokeSignal("update");
+		invokeSignal("update_rect");
 	}
 }
 

@@ -43,7 +43,6 @@ public:
 	std::set<Control*, OrderById> scene;
 	std::set<InputArea*, OrderById> inputAreas;
 	std::unordered_map<std::string_view, Control*> nameLookup;
-	std::unordered_map<UINT32, Control*> timers;
 
 	bool is_resizing;
 

@@ -9,6 +9,8 @@ class InputArea : public Control
 	LPWSTR cursorName;
 	bool draggable;
 	Point dragPoint;
+	int mousePrevX;
+	int mousePrevY;
 public:
 	bool dragging;
 	bool hasFocus;
@@ -24,6 +26,7 @@ public:
 
 	int mouseX;
 	int mouseY;
+	iPoint mouseDelta;
 	wchar_t pressedChar;
 	WPARAM pressedKey;
 

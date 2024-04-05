@@ -72,6 +72,11 @@ public:
 			this
 		);
 
+		SetProcessDPIAware();
+
+		// hacky solution to fix small title-bar after setting dpi awareness
+		SetWindowPos(getHandle(), nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
+
 		return (handle ? TRUE : FALSE);
 	}
 

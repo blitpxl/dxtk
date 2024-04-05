@@ -38,8 +38,6 @@ void Window::OnPaint()
 		renderer.begin();
 		renderer.renderTarget->Clear(backgroundColor);
 
-		ImmediateDraw();
-
 		for (Control* control : scene)
 		{
 			control->update();
@@ -356,10 +354,6 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
     case WM_KEYDOWN:
     	OnKeyPress(wparam);
     	break;
-
-    case WM_TIMER:
-    	timers[(UINT32)wparam]->invokeSignal("timeout");
-    	return 0;
 	}
 
 	return DefWindowProc(getHandle(), msg, wparam, lparam);

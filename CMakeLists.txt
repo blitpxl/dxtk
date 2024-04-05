@@ -21,20 +21,14 @@ add_library(dxtk STATIC
 	dxtk/rectangle.cpp
 	dxtk/renderer.cpp
 	dxtk/row.cpp
-	dxtk/shapes.cpp
 	dxtk/slider.cpp
 	dxtk/textfield.cpp
 	dxtk/timer.cpp
 	dxtk/window.cpp
-	dxtk/wintimer.cpp
 )
 
 set(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:WINDOWS /DEBUG")
 
 add_executable(demo main.cpp)
-target_include_directories(demo PRIVATE ./dxtk 
-	#./bass
-)
-target_link_libraries(demo dxtk user32 dwmapi d2d1 dxguid dwrite
-	#../bass/bass
-)
+target_include_directories(demo PRIVATE ./dxtk)
+target_link_libraries(demo dxtk user32 dwmapi d2d1 dxguid dwrite shcore)

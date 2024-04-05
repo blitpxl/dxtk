@@ -3,7 +3,7 @@
 
 InputArea::InputArea(Control* parent, float x, float y, float width, float height)
 : Control(parent), cursorName(IDC_ARROW), hasFocus(false), keyboardTracking(false), mouseTracking(true), 
-  mouseEntered(false), dragging(false), mouseX(0), mouseY(0),
+  mouseEntered(false), dragging(false), mouseX(0), mouseY(0), mousePrevX(0), mousePrevY(0),
   draggable(false), dragPoint(0.0f, 0.0f), minDragX(-FLT_MAX), minDragY(-FLT_MAX),
   maxDragX(FLT_MAX), maxDragY(FLT_MAX), passThrough(false)
 {
@@ -11,12 +11,17 @@ InputArea::InputArea(Control* parent, float x, float y, float width, float heigh
 	this->y = y;
 	this->width = width;
 	this->height = height;
+	mouseDelta = iPoint(0, 0);
 	move(x, y);
 	resource.window->push(this);
 
-	resource.window->registerSignal(this, "primary_button_up", [this](){ dragging = false; });
+	resource.window->registerSignal(this, "primary_button_up", [this](){
+		if (dragging)
+			resource.window->setCursor(IDC_ARROW);
+		dragging = false;
+	});
 	registerSignal(this, "mouse_enter", [this](){ resource.window->setCursor(cursorName); });
-	registerSignal(this, "mouse_leave", [this](){ resource.window->setCursor(IDC_ARROW); });
+	registerSignal(this, "mouse_leave", [this](){ if (!dragging) resource.window->setCursor(IDC_ARROW); });
 	registerSignal(this, "mouse_drag", [this](){
 		if (draggable)
 		{
@@ -114,6 +119,9 @@ void InputArea::sendKeyPress(WPARAM key)
 
 bool InputArea::intersect(int x, int y)
 {
+	mouseDelta = iPoint(x - mousePrevX, y - mousePrevY);
+	mousePrevX = x;
+	mousePrevY = y;
 	return (x > this->x && x < (this->x + width)) && (y > this->y && y < (this->y + height));
 }
 

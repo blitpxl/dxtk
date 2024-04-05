@@ -1,0 +1,4 @@
+C:/dev/dxtk/debug/CMakeFiles/dxtk.dir
+C:/dev/dxtk/debug/CMakeFiles/demo.dir
+C:/dev/dxtk/debug/CMakeFiles/ALL_BUILD.dir
+C:/dev/dxtk/debug/CMakeFiles/ZERO_CHECK.dir

@@ -21,6 +21,12 @@ struct Point
 	float y;
 };
 
+struct iPoint
+{
+	int x;
+	int y;
+};
+
 struct SharedResource
 {
 	ID2D1HwndRenderTarget* renderTarget;
