@@ -108,7 +108,7 @@ public:
 
 	void setSize(int w, int h)
 	{
-		MoveWindow(getHandle(), x, y, w+16, h+39, FALSE);
+		MoveWindow(getHandle(), x, y, w, h, FALSE);
 		this->w = w;
 		this->h = h;
 	}

@@ -136,12 +136,13 @@ void Window::OnPrimaryMouseButtonUp(int x, int y)
 	for (auto it = inputAreas.rbegin(); it != inputAreas.rend(); ++it)
 	{
 		InputArea* inputArea = *it;
+		bool passThrough = inputArea->passThrough;
 		if (inputArea->mouseTracking)
 		{
 			if (inputArea->intersect(x, y))
 			{
 				inputArea->sendPrimaryMouseButtonUp(x, y);
-				if (!inputArea->passThrough)
+				if (!passThrough)
 					break;
 			}
 		}

@@ -3,15 +3,16 @@ Retained mode, Lightweight, Hardware-Accelerated and Highly customizable GUI Fra
 
 Features:
 - **Lightweight**
+  
 	Lean memory usage and binary size.
 - **Simple**
-	Uses easy to understand concepts such as object signaling and event handling.
+  
+	Simple concepts, simple implementation.
 - **Hardware Accelerated**
+  
 	Uses the GPU to draw controls with fallback to software rendering when no GPU is present.
-- **Smooth Animations**
-	Controls are animated using floating point coordinate to achieve smooth animations.
-	Controls can be easily animated with Timers and `std::lerp`.
 - **Complex Layout with Anchors**
+  
 	An intuitive positioning concept inspired from Qt QML.
 
 # Examples
@@ -140,5 +141,5 @@ The current state of the project is still in a phase that I call "Good enough fo
 - [x] Timer
 - [x] InputArea
 - [ ] ScrollView/Bar
-- [ ] Multi-DPI Support
+- [x] Multi-DPI Support
 - [ ] Multi-Window Support

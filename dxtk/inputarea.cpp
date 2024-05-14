@@ -31,12 +31,16 @@ InputArea::InputArea(Control* parent, float x, float y, float width, float heigh
 	});
 	z = zCounter;
 	zCounter++;
+
+	registerSignal(this, "delete", [this](){
+		resource.window->unregisterSignal(this);
+		resource.window->inputAreas.erase(this);
+	});
 }
 
 InputArea::~InputArea()
 {
-	resource.window->unregisterSignal(this);
-	resource.window->inputAreas.erase(this);
+
 }
 
 void InputArea::sendMouseDrag(int x, int y)

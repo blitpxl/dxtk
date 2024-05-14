@@ -89,7 +89,6 @@ public:
 	float height;
 	bool visible;
 
-	std::string name;
 	Control* parent;
 	std::unordered_map<AnchorType, float> anchors;
 	AnchorMargin margins;

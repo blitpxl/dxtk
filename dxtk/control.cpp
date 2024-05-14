@@ -3,14 +3,16 @@
 
 // this constructor should only be used by the window
 Control::Control()
-: name("unnamed"), x(0), y(0), localX(0), localY(0), width(0), height(0), visible(false)
+: x(0), y(0), localX(0), localY(0), width(0), height(0), visible(false)
 {
+	name = "unnamed";
 	parent = NULL;
 }
 
 Control::Control(Control* parent)
-: name("unnamed"), x(0), y(0), localX(0), localY(0), width(0), height(0), visible(false)
+: x(0), y(0), localX(0), localY(0), width(0), height(0), visible(false)
 {
+	name = "unnamed";
 	this->parent = parent;
 	resource.window->push(this);
 

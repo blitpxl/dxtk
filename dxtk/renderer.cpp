@@ -39,7 +39,7 @@ HRESULT Renderer::obtainGraphicsResources()
 		D2D1_SIZE_U windowSize = D2D1::SizeU(clientRect.right, clientRect.bottom);
 
 		result = factory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(), // add renderer option here (aka software render mode)
+			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT), // add renderer option here (aka software render mode)
 			D2D1::HwndRenderTargetProperties(windowHandle, windowSize),
 			&renderTarget
 		);

@@ -10,8 +10,10 @@ class DxObject
 {
 	std::unordered_map<std::string_view, std::unordered_map<DxObject*, std::vector<std::function<void(void)>>>> registry;
 public:
+	std::string name;
+
 	DxObject() = default;
-	~DxObject() { invokeSignal("delete"); }
+	~DxObject();
 
 	void registerSignal(DxObject* registrant, std::string_view signalName, std::function<void(void)> callback);
 	void unregisterSignal(DxObject* registrant, std::string_view signalName = "");
