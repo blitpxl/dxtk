@@ -13,13 +13,15 @@ Control::Control(Control* parent)
 : x(0), y(0), localX(0), localY(0), width(0), height(0), visible(false)
 {
 	name = "unnamed";
+
+	instanceCounter++;
+	id = instanceCounter;
+
 	this->parent = parent;
 	resource.window->push(this);
 
 	// propagate dirty signal from parent to children
 	parent->registerSignal(this, "dirty", [this](){ setDirty(); });
-	instanceCounter++;
-	id = instanceCounter;
 }
 
 Control::~Control()
@@ -219,6 +221,7 @@ void Control::update()
 				{
 					x = (parent->anchors[targetAnchors.right] - width) - margins.right;
 				}
+				invokeSignal("resize");
 			}
 	
 			if (targetAnchors.bottom != AnchorType::none) // same here but for top and bottom
@@ -231,6 +234,7 @@ void Control::update()
 				{
 					y = (parent->anchors[targetAnchors.bottom] - height) - margins.bottom;
 				}
+				invokeSignal("resize");
 			}
 	
 			if (targetAnchors.horizontalCenter != AnchorType::none)

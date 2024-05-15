@@ -33,7 +33,6 @@ void DxObject::invokeSignal(std::string_view signalName)
 	{
 		for (std::function<void(void)> callback : it->second)
 		{
-			print(signalName);
 			callback();
 		}
 	}

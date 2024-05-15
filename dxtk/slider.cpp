@@ -25,14 +25,8 @@ Slider::Slider(Control* parent, float x, float y, float width, float height)
 		this->invokeSignal("value_changed");
 	});
 
-	registerSignal(this, "update_slider", [this](){
-		inputArea->setDragLimitX(0, this->width - this->handle->width);
-		this->handle->setX(mapRange(this->handlePos, 0.0, 1.0, 0.0, this->width - this->handle->width));
-		this->valueBar->setWidth(this->handle->localX);
-	});
-
-	registerSignal(this, "resize", [this](){ invokeSignal("update_slider"); });
-	registerSignal(this, "value_changed", [this](){ invokeSignal("update_slider"); });
+	registerSignal(this, "resize", [this](){ updateSlider(); });
+	registerSignal(this, "value_changed", [this](){ updateSlider(); });
 }
 
 Slider::~Slider()
@@ -55,4 +49,11 @@ void Slider::setValue(float value)
 	this->handlePos = mapRange(value, minValue, maxValue, 0.0, 1.0);
 	this->value = value;
 	invokeSignal("value_changed");
+}
+
+void Slider::updateSlider()
+{
+	inputArea->setDragLimitX(0, this->width - this->handle->width);
+	this->handle->setX(mapRange(this->handlePos, 0.0, 1.0, 0.0, this->width - this->handle->width));
+	this->valueBar->setWidth(this->handle->localX);
 }

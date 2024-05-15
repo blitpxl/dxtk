@@ -36,17 +36,6 @@ Button::Button(Control* parent, float x, float y, float width, float height)
 	});
 }
 
-Button::~Button()
-{
-	//delete inputArea;
-	//delete label;
-}
-
-void Button::destroy()
-{
-	delete this;
-}
-
 void Button::setText(std::string const& text)
 {
 	label->setText(text);

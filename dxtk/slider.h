@@ -20,4 +20,7 @@ public:
 
 	void setRange(float minValue, float maxValue);
 	void setValue(float value);
+
+private:
+	void updateSlider();
 };

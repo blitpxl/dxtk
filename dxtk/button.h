@@ -19,7 +19,6 @@ public:
 
 	Button(Control* parent, float x, float y, float width, float height);
 	~Button();
-	void destroy();
 
 	void setText(std::string const& text);
 	void setTextColor(ColorType color);
