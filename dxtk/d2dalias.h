@@ -1,5 +1,8 @@
 #pragma once
 
+#define DPointType				D2D1_POINT_2F
+#define DPoint					D2D1::Point2F
+
 // Renderer
 #define DefaultRenderer			D2D1_RENDER_TARGET_TYPE_DEFAULT
 #define HardwareRenderer		D2D1_RENDER_TARGET_TYPE_HARDWARE
@@ -51,7 +54,7 @@
 #define FontWeightBlack 		DWRITE_FONT_WEIGHT_BLACK
 #define FontWeightHeavy 		DWRITE_FONT_WEIGHT_HEAVY
 #define FontWeightExtraBlack 	DWRITE_FONT_WEIGHT_EXTRA_BLACK
-#define FontWeightUltraBlack 	DWRITE_FONT_WEIGHT_ULTRA_BLACk
+#define FontWeightUltraBlack 	DWRITE_FONT_WEIGHT_ULTRA_BLACK
 
 // Font Style
 #define FontStyleNormal 		DWRITE_FONT_STYLE_NORMAL
@@ -59,4 +62,4 @@
 #define FontStyleItalic 		DWRITE_FONT_STYLE_ITALIC
 
 // HitTest Metrics struct
-#define HitTestMetrics			DWRITE_HIT_TEST_METRICS 
+#define HitTestMetrics			DWRITE_HIT_TEST_METRICS

@@ -78,7 +78,6 @@ public:
 
 	bool is_window = false;
 	bool is_debug = false;
-	bool is_drawable = false;
 	bool is_dirty = true;
 	unsigned int id;
 	float x;
@@ -106,6 +105,7 @@ public:
 	void setDirty();
 	LPCWSTR toWString(std::string const& string);
 	Point mapToLocal(float globalX, float globalY);
+	bool isInView();
 	virtual void move(float x, float y);
 	virtual void setX(float x);
 	virtual void setY(float y);

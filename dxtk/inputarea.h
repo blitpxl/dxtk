@@ -26,12 +26,12 @@ public:
 
 	int mouseX;
 	int mouseY;
+	__int16 scrollDelta;
 	iPoint mouseDelta;
 	wchar_t pressedChar;
 	WPARAM pressedKey;
 
 	InputArea(Control* parent, float x, float y, float width, float height);
-	~InputArea();
 
 	void sendFocusGained();
 	void sendFocusLost();
@@ -42,6 +42,7 @@ public:
 	void sendPrimaryMouseButtonUp(int x, int y);
 	void sendSecondaryMouseButtonDown(int x, int y);
 	void sendSecondaryMouseButtonUp(int x, int y);
+	void sendMouseWheel(__int16 delta);
 	void sendCharPress(wchar_t character);
 	void sendKeyPress(WPARAM key);
 

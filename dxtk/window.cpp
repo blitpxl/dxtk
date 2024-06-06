@@ -41,7 +41,7 @@ void Window::OnPaint()
 		for (Control* control : scene)
 		{
 			control->update();
-			if (control->is_drawable && control->visible)
+			if (control->visible && control->isInView())
 			{
 				control->draw();
 			}
@@ -50,6 +50,7 @@ void Window::OnPaint()
 		renderer.end();
 		is_resizing = false; // if the window was resizing
 	}
+	invokeSignal("render");
 }
 
 void Window::OnMouseMove(int x, int y)
@@ -338,6 +339,11 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_RBUTTONUP:
 		OnSecondaryMouseButtonUp(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+		return 0;
+
+	case WM_MOUSEWHEEL:
+		if (hoveredInputArea != nullptr)
+			hoveredInputArea->sendMouseWheel(GET_WHEEL_DELTA_WPARAM(wparam));
 		return 0;
 
 	case WM_SETCURSOR:

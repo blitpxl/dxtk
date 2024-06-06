@@ -2,7 +2,7 @@
 
 Renderer::Renderer()
 : factory(NULL), dwriteFactory(NULL), imageFactory(NULL), renderTarget(NULL), 
-  scaling(1.0f) {}
+  scaling(1.0f), rendererType(DefaultRenderer) {}
 
 void Renderer::initRenderer()
 {
@@ -39,7 +39,7 @@ HRESULT Renderer::obtainGraphicsResources()
 		D2D1_SIZE_U windowSize = D2D1::SizeU(clientRect.right, clientRect.bottom);
 
 		result = factory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT), // add renderer option here (aka software render mode)
+			D2D1::RenderTargetProperties(rendererType),
 			D2D1::HwndRenderTargetProperties(windowHandle, windowSize),
 			&renderTarget
 		);
@@ -73,6 +73,11 @@ void Renderer::destroyGraphicsResources()
 void Renderer::setRenderScale(float scaling)
 {
 	this->scaling = scaling;
+}
+
+void Renderer::setRendererType(D2D1_RENDER_TARGET_TYPE type)
+{
+	rendererType = type;
 }
 
 void Renderer::begin()

@@ -27,6 +27,7 @@ public:
 	ID2D1HwndRenderTarget* renderTarget;
 	ID2D1DrawingStateBlock* renderState;
 	D2D1_SIZE_F renderTargetSize;
+	D2D1_RENDER_TARGET_TYPE rendererType;
 	float scaling;
 
 public:
@@ -35,6 +36,7 @@ public:
 	HRESULT obtainGraphicsResources();
 	void destroyGraphicsResources();
 	void setRenderScale(float scaling);
+	void setRendererType(D2D1_RENDER_TARGET_TYPE type);
 	void begin();
 	void end();
 	void resize();

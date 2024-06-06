@@ -4,7 +4,6 @@
 Drawable::Drawable(Control* parent)
 : Control(parent), scale(1.0f), rotation(0.0f), clip_pushed(false), color(Color(Color::White))
 {
-	is_drawable = true;
 	visible = true;
 	resource.renderTarget->CreateSolidColorBrush(color, &brush);
 }

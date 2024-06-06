@@ -83,6 +83,11 @@ Point Control::mapToLocal(float globalX, float globalY)
 	return result;
 }
 
+bool Control::isInView()
+{
+	return ((x + width > 0) && (x < resource.window->width)) && ((y + height > 0) && (y < resource.window->height));
+}
+
 void Control::move(float x, float y)
 {
 	this->localX = x;

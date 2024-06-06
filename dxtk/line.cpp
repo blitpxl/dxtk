@@ -3,7 +3,6 @@
 Line::Line(Control* parent, Point pointA, Point pointB)
 : Drawable(parent), pointA(D2D1::Point2F(pointA.x, pointA.y)), pointB(D2D1::Point2F(pointB.x, pointB.y)), thickness(1.0f)
 {
-	is_drawable = true;
 	visible = true;
 	resource.renderTarget->CreateSolidColorBrush(Color(Color::White), &brush);
 }

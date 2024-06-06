@@ -3,7 +3,7 @@
 
 InputArea::InputArea(Control* parent, float x, float y, float width, float height)
 : Control(parent), cursorName(IDC_ARROW), hasFocus(false), keyboardTracking(false), mouseTracking(true), 
-  mouseEntered(false), dragging(false), mouseX(0), mouseY(0), mousePrevX(0), mousePrevY(0),
+  mouseEntered(false), dragging(false), mouseX(0), mouseY(0), mousePrevX(0), mousePrevY(0), scrollDelta(0),
   draggable(false), dragPoint(0.0f, 0.0f), minDragX(-FLT_MAX), minDragY(-FLT_MAX),
   maxDragX(FLT_MAX), maxDragY(FLT_MAX), passThrough(false)
 {
@@ -36,11 +36,6 @@ InputArea::InputArea(Control* parent, float x, float y, float width, float heigh
 		resource.window->unregisterSignal(this);
 		resource.window->inputAreas.erase(this);
 	});
-}
-
-InputArea::~InputArea()
-{
-
 }
 
 void InputArea::sendMouseDrag(int x, int y)
@@ -107,6 +102,12 @@ void InputArea::sendSecondaryMouseButtonUp(int x, int y)
 	mouseX = x;
 	mouseY = y;
 	invokeSignal("secondary_button_up");
+}
+
+void InputArea::sendMouseWheel(__int16 delta)
+{
+	scrollDelta = delta;
+	invokeSignal("wheel");
 }
 
 void InputArea::sendCharPress(wchar_t character)
